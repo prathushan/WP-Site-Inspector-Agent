@@ -75,17 +75,16 @@ Alternatively, for testing without plugin packaging:
 - Plugin folder scan support  
 - WP-CLI integration for headless/terminal use
 
----
 
  📃 License
 
 Released under the MIT License — free to use, modify, and distribute.
 
----
+
 
  🙌 Author
-
+Created with ❤️ by [Prathusha](https://github.com/prathushan), [Prem](https://github.com/PremKumar-Softscripts), and [Vinay](https://github.com/v-i-nay) 
  
-Created with ❤️ by [Prathusha](https://github.com/prathusha), [Prem](https://github.com/PremKumar-Softscripts), and [Vinay](https://github.com/vinay) 
+
 Have feedback or ideas? Feel free to open an issue or pull request.
 
