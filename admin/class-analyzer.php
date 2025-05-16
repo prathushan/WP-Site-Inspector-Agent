@@ -1,8 +1,11 @@
+
 <?php
 if (!defined('ABSPATH')) exit;
 
-class WP_Site_Inspector_Analyzer {
-    public function analyze() {
+class WP_Site_Inspector_Analyzer
+{
+    public function analyze()
+    {
         $dir = ABSPATH;
         $theme = wp_get_theme();
         $theme_dir = get_theme_root() . '/' . $theme->get_stylesheet();
@@ -13,20 +16,34 @@ class WP_Site_Inspector_Analyzer {
             'type' => file_exists($theme_dir . '/theme.json') ? 'Block (FSE)' : 'Classic'
         ];
 
-        // === Plugins ===
-        $all_plugins = get_plugins();
-        $update_plugins = get_site_transient('update_plugins');
-        $plugins = [];
+       // === Plugins ===
+require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-        foreach ($all_plugins as $slug => $info) {
-            $has_update = isset($update_plugins->response[$slug]);
+$all_plugins     = get_plugins();
+$update_plugins  = get_site_transient('update_plugins');
+$plugins         = [];
 
-            $plugins[] = [
-                'name'   => $info['Name'],
-                'status' => is_plugin_active($slug) ? 'Active' : 'Inactive',
-                'update' => $has_update ? 'Update available' : 'Up to date'
-            ];
-        }
+foreach ($all_plugins as $slug => $info) {
+    $has_update = isset($update_plugins->response[$slug]);
+
+    // Absolute path to plugin main file
+    $plugin_path = WP_PLUGIN_DIR . '/' . $slug;
+
+    // Try to get file creation and modification time
+    $install_time = file_exists($plugin_path) ? date('Y-m-d H:i:s', filectime($plugin_path)) : 'N/A';
+    $update_time  = file_exists($plugin_path) ? date('Y-m-d H:i:s', filemtime($plugin_path)) : 'N/A';
+
+    $plugins[] = [
+        'name'         => $info['Name'],
+        'status'       => is_plugin_active($slug) ? 'Active' : 'Inactive',
+        'update'       => $has_update ? 'Update available' : 'Up to date',
+        'installed_on' => $install_time,
+        'last_update'  => $update_time,
+    ];
+}
+
+$data['plugins'] = $plugins;
+
 
         // === Theme Builders ===
         $builders = [];
@@ -52,40 +69,79 @@ class WP_Site_Inspector_Analyzer {
             }
         }
 
-        // === Pages ===
-        $pages = [];
-        foreach (get_pages(['post_status' => ['publish', 'draft']]) as $page) {
-            $pages[] = [
-                'title' => $page->post_title,
-                'status' => ucfirst($page->post_status)
-            ];
-        }
+       // === Pages ===
+$pages = [];
+foreach (get_pages(['post_status' => ['publish', 'draft']]) as $page) {
+    $formatted_date = '';
+    
+    if ($page->post_status === 'publish') {
+        $formatted_date = date('m/d/y, h:ia', strtotime($page->post_date));
+    }
+    else{
+        $formatted_date="Not Published";
+    }
 
-        // === Posts ===
-        $posts = [];
-        foreach (get_posts(['numberposts' => -1, 'post_status' => ['publish', 'draft', 'pending']]) as $post) {
-            $posts[] = [
-                'title' => $post->post_title,
-                'status' => ucfirst($post->post_status)
-            ];
-        }
+    $pages[] = [
+        'title'  => $page->post_title,
+        'status' => ucfirst($page->post_status),
+        'date'   => $formatted_date // Empty if draft
+    ];
+}
 
-        // === Post Types ===
-        $post_types = [];
-        foreach (get_post_types([], 'objects') as $post_type => $obj) {
-            $file = 'Built in';
-            if (!$obj->_builtin) {
-                if (!empty($obj->description) && stripos($obj->description, 'plugin') !== false) {
-                    $file = 'Plugin (guessed)';
-                } else {
-                    $file = 'functions.php or plugin';
-                }
-            }
-            $post_types[$post_type] = [
-                'label' => $obj->label,
-                'file' => $file
-            ];
+
+       // === Posts ===
+$posts = [];
+foreach (get_posts(['numberposts' => -1, 'post_status' => ['publish', 'draft', 'pending']]) as $post) {
+    $posts[] = [
+        'title'  => $post->post_title,
+        'status' => ucfirst($post->post_status),
+        'date'   => ($post->post_status === 'publish') 
+            ? date('d/m/y, h:iA', strtotime($post->post_date)) 
+            : 'Not Published' 
+    ];
+}
+
+
+// === Post Types ===
+$post_types = [];
+
+foreach (get_post_types([], 'objects') as $post_type => $obj) {
+    $file = 'Built in';
+    if (!$obj->_builtin) {
+        if (!empty($obj->description) && stripos($obj->description, 'plugin') !== false) {
+            $file = 'Plugin (guessed)';
+        } else {
+            $file = 'functions.php or plugin';
         }
+    }
+
+    // Get published post count
+    $count = wp_count_posts($post_type);
+    $published = isset($count->publish) ? $count->publish : 0;
+
+    // Get last post date (published)
+    $last = get_posts([
+        'post_type'      => $post_type,
+        'post_status'    => 'publish',
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'posts_per_page' => 1,
+        'fields'         => 'ids'
+    ]);
+
+    $last_used = !empty($last) ? get_the_date('Y-m-d H:i:s', $last[0]) : '—';
+
+    $post_types[$post_type] = [
+        'label'      => $obj->label,
+        'file'       => $file,
+        'used_count' => $published,
+        'last_used'  => $last_used,
+    ];
+}
+
+// Save into $data array if needed
+$data['post_types'] = $post_types;
+
 
         // === Templates ===
         $templates = [];
@@ -116,7 +172,7 @@ class WP_Site_Inspector_Analyzer {
         $hooks = [];
         $rest_apis = [];
         $cdn_links = [];
-        $cdn_patterns = ['swiper','jquery','bootstrap','fontawesome','gsap','chart.js','lodash','moment','anime','three'];
+        $cdn_patterns = ['swiper', 'jquery', 'bootstrap', 'fontawesome', 'gsap', 'chart.js', 'lodash', 'moment', 'anime', 'three'];
 
         $files = iterator_to_array($rii);
         foreach ($files as $file) {
@@ -210,3 +266,4 @@ class WP_Site_Inspector_Analyzer {
         ];
     }
 }
+

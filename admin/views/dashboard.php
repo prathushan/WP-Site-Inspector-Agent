@@ -1,3 +1,4 @@
+
 <?php
 if (!defined('ABSPATH')) exit;
 
@@ -186,47 +187,71 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
   }
   wpsi_render_tab_content('builders', 'Theme Builders', ['Builder', 'Status'], $builder_rows);
 
-  // Plugins
   $plugin_rows = [];
-  foreach ($plugins as $p) {
+foreach ($data['plugins'] as $plugin) {
     $plugin_rows[] = [
-      esc_html($p['name']),
-      esc_html($p['status']),
-      esc_html($p['update'])
+        esc_html($plugin['name']),
+        esc_html($plugin['status']),
+        esc_html($plugin['update']),
+        esc_html($plugin['last_update']),
     ];
-  }
-  wpsi_render_tab_content('plugins', 'Plugins', ['Plugin Name', 'Status', 'Update Status'], $plugin_rows);
+}
 
-  // Pages
-  $page_rows = [];
-  foreach ($pages as $page) {
-    $page_rows[] = [
-      esc_html($page['title']),
-      esc_html($page['status'])
-    ];
-  }
-  wpsi_render_tab_content('pages', 'Pages', ['Title', 'Status'], $page_rows);
+wpsi_render_tab_content(
+    'plugins',
+    'Plugins',
+    ['Plugin Name', 'Status', 'Update Status','Last Updated'],
+    $plugin_rows
+);
 
-  // Posts
-  $post_rows = [];
-  foreach ($posts as $post) {
+
+ // Pages
+$page_rows = [];
+foreach ($pages as $page) {
+  $page_rows[] = [
+    esc_html($page['title']),
+    esc_html($page['status']),
+    esc_html($page['date']) // Add this line for publish date
+  ];
+}
+
+// Add "Published At" column
+wpsi_render_tab_content('pages', 'Pages', ['Title', 'Status', 'Published At'], $page_rows);
+
+
+// Posts
+$post_rows = [];
+foreach ($posts as $post) {
     $post_rows[] = [
-      esc_html($post['title']),
-      esc_html($post['status'])
+        esc_html($post['title']),
+        esc_html($post['status']),
+        esc_html($post['date'])
     ];
-  }
-  wpsi_render_tab_content('posts', 'Posts', ['Title', 'Status'], $post_rows);
+}
 
-  // Post Types
-  $post_type_rows = [];
-  foreach ($data['post_types'] as $k => $pt) {
-    $post_type_rows[] = [
-      esc_html($k),
-      esc_html($pt['label']),
-      esc_html($pt['file'])
-    ];
-  }
-  wpsi_render_tab_content('post-types', 'Post Types', ['Type', 'Label', 'Location'], $post_type_rows);
+wpsi_render_tab_content('posts', 'Posts', ['Title', 'Status', 'Published At'], $post_rows);
+
+
+ // Post Types
+$post_type_rows = [];
+foreach ($data['post_types'] as $k => $pt) {
+  $post_type_rows[] = [
+    esc_html($k),                      // Post type slug (e.g., 'post', 'page', 'event')
+    esc_html($pt['label']),           // Label
+    esc_html($pt['file']),            // Source file
+    esc_html($pt['used_count']),      // Count of published items
+    esc_html($pt['last_used'])        // Last used date & time
+  ];
+}
+
+wpsi_render_tab_content(
+  'post-types',
+  'Post Types',
+  ['Type', 'Label', 'Location', 'Used Count', 'Last Used (Date & Time)'],
+  $post_type_rows
+);
+
+
 
   // Templates
   $template_rows = [];
