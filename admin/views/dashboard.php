@@ -236,11 +236,11 @@ wpsi_render_tab_content('posts', 'Posts', ['Title', 'Status', 'Published At'], $
 $post_type_rows = [];
 foreach ($data['post_types'] as $k => $pt) {
   $post_type_rows[] = [
-    esc_html($k),                      // Post type slug (e.g., 'post', 'page', 'event')
-    esc_html($pt['label']),           // Label
-    esc_html($pt['file']),            // Source file
-    esc_html($pt['used_count']),      // Count of published items
-    esc_html($pt['last_used'])        // Last used date & time
+    esc_html($k),                      
+    esc_html($pt['label']),           
+    esc_html($pt['file']),            
+    esc_html($pt['used_count']),      
+    esc_html($pt['last_used'])        
   ];
 }
 
