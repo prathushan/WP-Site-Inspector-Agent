@@ -1,4 +1,4 @@
- 🔍 WordPress Site Inspector Plugin
+ 🔍 WordPress WP Site Inspector Plugin
 
 Instantly map shortcodes, hooks, APIs, and more in any WordPress theme — a developer’s time-saving debug assistant.
 
@@ -21,7 +21,7 @@ Instead of manually searching through theme files, this tool shows you what’s 
 
 ⚡ How It Saves Developers & Agencies Time
 
-Whether you're onboarding a new client site or debugging a complex WordPress installation, Code Mapper helps you:
+Whether you're onboarding a new client site or debugging a complex WordPress installation, WP Site Inspector helps you:
 
 - 🧩 **Understand custom functionality** by exposing hidden shortcodes, plugin calls, and hooks.
 - 🔍 **Audit faster** by mapping everything in one place.
@@ -58,7 +58,7 @@ It's a huge time-saver for teams working on large, undocumented, or inherited Wo
 1. Download the plugin `.zip` file from the GitHub release.
 2. In your WordPress dashboard, go to **Plugins > Add New > Upload Plugin**.
 3. Select the `.zip` file and click **Install Now**, then **Activate**.
-4. Go to **Tools > Code Mapper** in your dashboard to view the scan results.
+4. You can now see the **WP Site Inspector** in your dashboard to view the scan results.
 
 ---
 
