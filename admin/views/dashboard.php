@@ -92,7 +92,7 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
       document.addEventListener('DOMContentLoaded', function() {
         const totalPages = <?= $total_pages ?>;
         const container = document.getElementById('pagination-<?= $safe_id ?>');
-        if (!container) return; // Safety check
+        if (!container) return; 
         const tabId = '<?= $safe_id ?>';
 
         function showPage(page) {
@@ -211,11 +211,11 @@ foreach ($pages as $page) {
   $page_rows[] = [
     esc_html($page['title']),
     esc_html($page['status']),
-    esc_html($page['date']) // Add this line for publish date
+    esc_html($page['date']) 
   ];
 }
 
-// Add "Published At" column
+
 wpsi_render_tab_content('pages', 'Pages', ['Title', 'Status', 'Published At'], $page_rows);
 
 

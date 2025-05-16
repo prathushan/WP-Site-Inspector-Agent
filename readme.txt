@@ -89,3 +89,4 @@ This plugin is licensed under the GPLv2 or later.
 
 Created with ❤️ by Prathusha, Prem, and Vinay  
 Visit [https://github.com/prathushan](https://github.com/prathushan) for contributions or ideas.
+
