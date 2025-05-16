@@ -60,13 +60,6 @@ It's a huge time-saver for teams working on large, undocumented, or inherited Wo
 3. Select the `.zip` file and click **Install Now**, then **Activate**.
 4. Go to **Tools > Code Mapper** in your dashboard to view the scan results.
 
-Alternatively, for testing without plugin packaging:
-
-- Upload the `wp-site-inspector.php` file to your `/wp-content/themes/` folder.
-- Visit it via browser:  
-  `https://your-site.com/wp-content/themes/wp-site-inspector.php`  
-  (admin login required)
-
 ---
 
  📦 Coming Soon
