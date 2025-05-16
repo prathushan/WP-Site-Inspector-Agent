@@ -15,7 +15,7 @@ class WP_Site_Inspector_Admin_UI {
             'manage_options',
             'wp-site-inspector',
             [$this, 'render_dashboard'],
-            'dashicons-search',
+            'dashicons-chart-area',
             81
         );
     }
