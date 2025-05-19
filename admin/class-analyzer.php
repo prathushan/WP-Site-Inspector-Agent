@@ -1,48 +1,54 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-class WP_Site_Inspector_Analyzer
-{
-    public function analyze()
-    {
+class WP_Site_Inspector_Analyzer {
+    public function analyze() {
         $dir = ABSPATH;
         $theme = wp_get_theme();
         $theme_dir = get_theme_root() . '/' . $theme->get_stylesheet();
-        $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+
+        // Limit scan to themes only to avoid memory overload
+        $rii = new RecursiveIteratorIterator(
+            new RecursiveCallbackFilterIterator(
+                new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+                function ($file, $key, $iterator) {
+                    $path = $file->getPathname();
+
+                    // Exclude large or irrelevant directories
+                    $excluded_dirs = ['uploads', 'cache', 'backups', 'ai1wm-backups', '.git', 'node_modules'];
+                    foreach ($excluded_dirs as $excluded) {
+                        if (stripos($path, DIRECTORY_SEPARATOR . $excluded) !== false) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            )
+        );
+
         $theme_info = [
             'name' => $theme->get('Name'),
             'version' => $theme->get('Version'),
             'type' => file_exists($theme_dir . '/theme.json') ? 'Block (FSE)' : 'Classic'
         ];
 
-       // === Plugins ===
-require_once ABSPATH . 'wp-admin/includes/plugin.php';
-
-$all_plugins     = get_plugins();
-$update_plugins  = get_site_transient('update_plugins');
-$plugins         = [];
-
-foreach ($all_plugins as $slug => $info) {
-    $has_update = isset($update_plugins->response[$slug]);
-
-    // Absolute path to plugin main file
-    $plugin_path = WP_PLUGIN_DIR . '/' . $slug;
-
-    // Try to get file creation and modification time
-    $install_time = file_exists($plugin_path) ? date('Y-m-d H:i:s', filectime($plugin_path)) : 'N/A';
-    $update_time  = file_exists($plugin_path) ? date('Y-m-d H:i:s', filemtime($plugin_path)) : 'N/A';
-
-    $plugins[] = [
-        'name'         => $info['Name'],
-        'status'       => is_plugin_active($slug) ? 'Active' : 'Inactive',
-        'update'       => $has_update ? 'Update available' : 'Up to date',
-        'installed_on' => $install_time,
-        'last_update'  => $update_time,
-    ];
-}
-
-$data['plugins'] = $plugins;
-
+        // === Plugins ===
+        $all_plugins = get_plugins();
+        $update_plugins = get_site_transient('update_plugins');
+        $plugins = [];
+        foreach ($all_plugins as $slug => $info) {
+            $plugin_path = WP_PLUGIN_DIR . '/' . $slug;
+            $install_time = file_exists($plugin_path) ? gmdate('Y-m-d H:i:s', filectime($plugin_path)) : 'N/A';
+            $update_time  = file_exists($plugin_path) ? gmdate('Y-m-d H:i:s', filemtime($plugin_path)) : 'N/A';
+        
+            $plugins[] = [
+                'name' => $info['Name'],
+                'status' => is_plugin_active($slug) ? 'Active' : 'Inactive',
+                'update'       => isset($update_plugins->response[$slug]) ? 'Update available' : 'Up to date',
+                'installed_on' => $install_time,
+                'last_update'  => $update_time,
+            ];
+        }
 
         // === Theme Builders ===
         $builders = [];
@@ -68,79 +74,58 @@ $data['plugins'] = $plugins;
             }
         }
 
-       // === Pages ===
-$pages = [];
-foreach (get_pages(['post_status' => ['publish', 'draft']]) as $page) {
-    $formatted_date = '';
-    
-    if ($page->post_status === 'publish') {
-        $formatted_date = date('m/d/y, h:ia', strtotime($page->post_date));
-    }
-    else{
-        $formatted_date="Not Published";
-    }
-
-    $pages[] = [
-        'title'  => $page->post_title,
-        'status' => ucfirst($page->post_status),
-        'date'   => $formatted_date // Empty if draft
-    ];
-}
-
-
-       // === Posts ===
-$posts = [];
-foreach (get_posts(['numberposts' => -1, 'post_status' => ['publish', 'draft', 'pending']]) as $post) {
-    $posts[] = [
-        'title'  => $post->post_title,
-        'status' => ucfirst($post->post_status),
-        'date'   => ($post->post_status === 'publish') 
-            ? date('d/m/y, h:iA', strtotime($post->post_date)) 
-            : 'Not Published' 
-    ];
-}
-
-
-// === Post Types ===
-$post_types = [];
-
-foreach (get_post_types([], 'objects') as $post_type => $obj) {
-    $file = 'Built in';
-    if (!$obj->_builtin) {
-        if (!empty($obj->description) && stripos($obj->description, 'plugin') !== false) {
-            $file = 'Plugin (guessed)';
-        } else {
-            $file = 'functions.php or plugin';
+        // === Pages ===
+        $pages = [];
+        foreach (get_pages(['post_status' => ['publish', 'draft']]) as $page) {
+            $pages[] = [
+                'title' => $page->post_title,
+                'status' => ucfirst($page->post_status),
+                'date'   => $page->post_status === 'publish'
+                    ? gmdate('Y-m-d H:i:s', strtotime($page->post_date))
+                    : 'Not Published',
+            ];
         }
-    }
 
-    // Get published post count
-    $count = wp_count_posts($post_type);
-    $published = isset($count->publish) ? $count->publish : 0;
+        // === Posts ===
+        $posts = [];
+        foreach (get_posts(['numberposts' => -1, 'post_status' => ['publish', 'draft', 'pending']]) as $post) {
+            $posts[] = [
+                'title' => $post->post_title,
+                'status' => ucfirst($post->post_status),
+                'date'   => $post->post_status === 'publish'
+                    ? gmdate('Y-m-d H:i:s', strtotime($post->post_date))
+                    : 'Not Published',
+            ];
+        }
 
-    // Get last post date (published)
-    $last = get_posts([
-        'post_type'      => $post_type,
-        'post_status'    => 'publish',
-        'orderby'        => 'date',
-        'order'          => 'DESC',
-        'posts_per_page' => 1,
-        'fields'         => 'ids'
-    ]);
+        // === Post Types ===
+        $post_types = [];
+        foreach (get_post_types([], 'objects') as $post_type => $obj) {
+            $file = $obj->_builtin ? 'Built in' : (stripos($obj->description ?? '', 'plugin') !== false ? 'Plugin (guessed)' : 'functions.php or plugin');
 
-    $last_used = !empty($last) ? get_the_date('Y-m-d H:i:s', $last[0]) : '—';
+            $count = wp_count_posts($post_type);
+            $published = $count->publish ?? 0;
 
-    $post_types[$post_type] = [
-        'label'      => $obj->label,
-        'file'       => $file,
-        'used_count' => $published,
-        'last_used'  => $last_used,
-    ];
-}
+            $last = get_posts([
+                'post_type' => $post_type,
+                'post_status' => 'publish',
+                'orderby' => 'date',
+                'order' => 'DESC',
+                'posts_per_page' => 1,
+                'fields' => 'ids'
+            ]);
 
-// Save into $data array if needed
-$data['post_types'] = $post_types;
+            $last_used = !empty($last)
+                ? gmdate('Y-m-d H:i:s', strtotime(get_post_field('post_date', $last[0])))
+                : 'N/A';
 
+            $post_types[$post_type] = [
+                'label' => $obj->label,
+                'file' => $file,
+                'used_count' => $published,
+                'last_used' => $last_used,
+            ];
+        }
 
         // === Templates ===
         $templates = [];
@@ -151,18 +136,12 @@ $data['post_types'] = $post_types;
             $relative = str_replace($dir, '', $path);
             $base = basename($path);
 
-            // Only scan inside themes
             if (strpos($relative, '/themes/') === false) continue;
 
-            // Match default WP template files
             if (preg_match('/^(page|single|archive|category|tag|index|home|404|search|author|taxonomy).*\.php$/', $base)) {
                 $templates[] = ['title' => $base, 'path' => $relative];
-            }
-
-            // Match custom templates with "Template Name"
-            $contents = file_get_contents($path);
-            if (preg_match('/Template Name\s*:\s*(.+)/i', $contents, $match)) {
-                $templates[] = ['title' => trim($match[1]), 'path' => $relative];
+            } elseif (preg_match('/Template Name\s*:\s*(.+)/i', file_get_contents($path), $match)) {
+                $templates[] = ['title' => $match[1], 'path' => $relative];
             }
         }
 
@@ -171,20 +150,19 @@ $data['post_types'] = $post_types;
         $hooks = [];
         $rest_apis = [];
         $cdn_links = [];
-        $cdn_patterns = ['swiper', 'jquery', 'bootstrap', 'fontawesome', 'gsap', 'chart.js', 'lodash', 'moment', 'anime', 'three'];
+        $cdn_patterns = ['swiper','jquery','bootstrap','fontawesome','gsap','chart.js','lodash','moment','anime','three'];
 
-        $files = iterator_to_array($rii);
-        foreach ($files as $file) {
+        foreach ($rii as $file) {
             if ($file->isDir()) continue;
             $ext = pathinfo($file, PATHINFO_EXTENSION);
             if (!in_array($ext, ['php', 'js'])) continue;
 
             $path = $file->getPathname();
             $relative = str_replace($dir, '', $path);
-            $lines = file($path);
+            $lines = @file($path);
+            if (!$lines) continue;
 
             foreach ($lines as $i => $line) {
-                // Shortcodes
                 if (preg_match_all('/add_shortcode\s*\(\s*[\'\"]([^\'"]+)[\'\"]/', $line, $m)) {
                     foreach ($m[1] as $tag) {
                         if (!isset($shortcodes[$tag])) {
@@ -193,20 +171,16 @@ $data['post_types'] = $post_types;
                     }
                 }
 
-                // Hooks - only inside active theme directory
-                if (strpos($relative, '/themes/' . $theme->get_stylesheet() . '/') !== false) {
-                    if (preg_match_all('/add_(action|filter)\s*\(\s*[\'\"]([^\'"]+)[\'\"]/', $line, $m, PREG_SET_ORDER)) {
-                        foreach ($m as $match) {
-                            $hooks[] = [
-                                'type' => ucfirst($match[1]),
-                                'hook' => $match[2],
-                                'file' => $relative . ' (line ' . ($i + 1) . ')'
-                            ];
-                        }
+                if (preg_match_all('/add_(action|filter)\s*\(\s*[\'\"]([^\'"]+)[\'\"]/', $line, $m, PREG_SET_ORDER)) {
+                    foreach ($m as $match) {
+                        $hooks[] = [
+                            'type' => ucfirst($match[1]),
+                            'hook' => $match[2],
+                            'file' => $relative . ' (line ' . ($i + 1) . ')'
+                        ];
                     }
                 }
 
-                // REST APIs
                 if (strpos($line, 'register_rest_route') !== false) {
                     if (preg_match("/register_rest_route\s*\(\s*['\"]([^'\"]+)['\"],\s*['\"]([^'\"]+)['\"]/", $line, $match)) {
                         $namespace = $match[1];
@@ -221,9 +195,8 @@ $data['post_types'] = $post_types;
                     }
                 }
 
-                // CDN/JS - Only add if file is inside active theme folder
                 foreach ($cdn_patterns as $lib) {
-                    if (stripos($line, $lib) !== false && strpos($relative, '/themes/' . $theme->get_stylesheet() . '/') !== false) {
+                    if (stripos($line, $lib) !== false) {
                         $cdn_links[] = [
                             'lib' => $lib,
                             'file' => $relative,
@@ -265,4 +238,3 @@ $data['post_types'] = $post_types;
         ];
     }
 }
-
