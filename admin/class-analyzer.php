@@ -191,7 +191,7 @@ class WP_Site_Inspector_Analyzer {
 
                 // CDN/JS
                 foreach ($cdn_patterns as $lib) {
-                    if (stripos($line, $lib) !== false && strpos($relative, '/themes/' . $theme->get_stylesheet() . '/') !== false)
+                    if (stripos($line, $lib) !== false && strpos($relative, '/themes/' . $theme->get_stylesheet() . '/') !== false){
                         $cdn_links[] = [
                             'lib' => $lib,
                             'file' => $relative,
