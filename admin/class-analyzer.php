@@ -162,6 +162,7 @@ class WP_Site_Inspector_Analyzer {
                 }
 
                 // Hooks
+                if (strpos($relative, '/themes/' . $theme->get_stylesheet() . '/') !== false) {
                 if (preg_match_all('/add_(action|filter)\s*\(\s*[\'\"]([^\'"]+)[\'\"]/', $line, $m, PREG_SET_ORDER)) {
                     foreach ($m as $match) {
                         $hooks[] = [
@@ -171,6 +172,7 @@ class WP_Site_Inspector_Analyzer {
                         ];
                     }
                 }
+            }
 
                 // REST APIs
                 if (strpos($line, 'register_rest_route') !== false) {
@@ -189,7 +191,7 @@ class WP_Site_Inspector_Analyzer {
 
                 // CDN/JS
                 foreach ($cdn_patterns as $lib) {
-                    if (stripos($line, $lib) !== false) {
+                    if (stripos($line, $lib) !== false && strpos($relative, '/themes/' . $theme->get_stylesheet() . '/') !== false)
                         $cdn_links[] = [
                             'lib' => $lib,
                             'file' => $relative,
