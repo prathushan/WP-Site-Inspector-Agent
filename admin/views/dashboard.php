@@ -9,7 +9,8 @@ $plugins = $data['plugins'];
 $pages = $data['pages'];
 $posts = $data['posts'];
 
-echo '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
+echo '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+';
 ?>
 <h1>Wp Site Inspector</h1>
 
@@ -43,6 +44,8 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
     <button class="tab-button" data-tab="hooks">Hooks</button>
     <button class="tab-button" data-tab="apis">REST APIs</button>
     <button class="tab-button" data-tab="cdn">CDN Links</button>
+    <button class="tab-button" data-tab="logs">Logs</button>
+
   </div>
 
   <?php
@@ -51,7 +54,7 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
     $total_rows = count($rows);
     $total_pages = ceil($total_rows / $per_page);
     $safe_id = htmlspecialchars($id, ENT_QUOTES);
-    $safe_title = htmlspecialchars($title, ENT_QUOTES);
+    $safe_title = $title;
 
     echo "<div id='$safe_id' class='tab-content'>";
     echo "<h2>$safe_title</h2>";
@@ -65,20 +68,24 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
     }
     echo "</tr></thead><tbody>";
 
-    foreach ($rows as $index => $row) {
-      $page_number = floor($index / $per_page);
-      echo "<tr class='page-row page-{$safe_id}-{$page_number}'>";
-      echo "<td>" . ($index + 1) . "</td>"; // Serial number
-      foreach ($row as $col) {
-        echo "<td>" . htmlspecialchars($col, ENT_QUOTES) . "</td>";
+    if (empty($rows)) {
+      echo "<tr><td colspan='" . (count($headers) + 1) . "' style='text-align:center;'>No " . $safe_title . " found on the site.</td></tr>";
+  } else {
+      foreach ($rows as $index => $row) {
+          $page_number = floor($index / $per_page);
+          echo "<tr class='page-row page-{$safe_id}-{$page_number}'>";
+          echo "<td>" . ($index + 1) . "</td>"; // Serial number
+          foreach ($row as $col) {
+              echo "<td>" . htmlspecialchars($col, ENT_QUOTES) . "</td>";
+          }
+          echo "</tr>";
       }
-      echo "</tr>";
-    }
+  }
 
-    echo "</tbody></table></div>";
+  echo "</tbody></table></div>";
 
-    // Pagination controls
-    if ($total_pages > 1) {
+  // Pagination controls (only if rows exist)
+  if ($total_pages > 1 && !empty($rows)) {
       echo "<div class='pagination' id='pagination-$safe_id'></div>";
     }
 
@@ -298,6 +305,71 @@ wpsi_render_tab_content(
   $cdn_rows = [];
   foreach ($data['cdn_links'] as $cdn) $cdn_rows[] = [$cdn['lib'], $cdn['file']];
   wpsi_render_tab_content('cdn', 'CDN / JS Usage', ['Library', 'File'], $cdn_rows);
+
+  // logs
+  $log_file = WP_CONTENT_DIR . '/site-inspector.log';
+ 
+  // Handle Clear Logs button submission
+  if (isset($_POST['wpsi_clear_logs']) && check_admin_referer('wpsi_clear_logs_action')) {
+    file_put_contents($log_file, ''); // Clears the file
+    $log_cleared = true;
+  }
+ 
+  $log_rows = [];
+  if (file_exists($log_file)) {
+    $log_lines = file($log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+ 
+    foreach ($log_lines as $line) {
+      // Skip non-error system logs
+      if (preg_match('/^(Analysis|Theme|Plugins|Pages|Posts|Templates|Shortcodes)/i', $line)) {
+        continue;
+      }
+ 
+      // Match our logger format
+      if (preg_match('/^\[(ERROR|WARNING|NOTICE|DEPRECATED|FATAL)\]\s([\d\-:\s]+)\s\-\s(.+?)(?:\s\(File:\s(.+?),\sLine:\s(\d+)\))?$/', $line, $matches)) {
+        $type = strtoupper($matches[1]);
+        $timestamp = trim($matches[2]);
+        $message = trim($matches[3]);
+        $file = isset($matches[4]) ? 'File: ' . trim($matches[4]) : '';
+        $line_no = isset($matches[5]) ? 'Line: ' . trim($matches[5]) : '';
+ 
+        // Append file/line info if available
+        $full_message = $message;
+        if ($file || $line_no) {
+          $full_message .= ' (' . trim("$file $line_no") . ')';
+        }
+ 
+        $log_rows[] = [
+          esc_html($timestamp ? date('m/d/y, h:ia', strtotime($timestamp)) : 'N/A'),
+          esc_html($type),
+          esc_html($full_message),
+        ];
+      }
+    }
+  }
+ 
+  if (empty($log_rows)) {
+    $log_rows[] = ['—', 'INFO', 'No error logs found.'];
+  }
+ 
+  // Optional message
+  if (!empty($log_cleared)) {
+    echo '<div class="notice notice-success"><p>Logs cleared successfully.</p></div>';
+  }
+  ob_start();
+  ?>
+  <div style="display: inline-block; margin-left: 20px;">
+    <form method="post" style="display: inline;">
+      <?php wp_nonce_field('wpsi_clear_logs_action'); ?>
+      <input type="submit" name="wpsi_clear_logs" class="button button-secondary" value="Clear Logs" />
+    </form>
+  </div>
+  <?php
+  $clear_button = ob_get_clean();
+ 
+  $custom_title = 'Error Logs' . $clear_button;
+ 
+  wpsi_render_tab_content('logs', $custom_title, ['Date', 'Type', 'Message'], $log_rows);
   ?>
 </div>
 
@@ -309,6 +381,7 @@ wpsi_render_tab_content(
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
 
 <script>
   // Tab functionality
@@ -341,7 +414,24 @@ wpsi_render_tab_content(
   });
 
   // Plugin Pie Chart
-  new Chart(document.getElementById('pluginPieChart'), {
+  document.addEventListener('DOMContentLoaded', function () {
+  // Helper to safely create charts
+  function createChart(id, config) {
+    const canvas = document.getElementById(id);
+    if (!canvas) {
+      console.warn(`Canvas with ID "${id}" not found.`);
+      return;
+    }
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error(`Cannot get 2D context from canvas ID "${id}"`);
+      return;
+    }
+    new Chart(ctx, config);
+  }
+
+  // Plugin Pie Chart
+  createChart('pluginPieChart', {
     type: 'pie',
     data: {
       labels: ['Active', 'Inactive'],
@@ -356,7 +446,7 @@ wpsi_render_tab_content(
   });
 
   // Page Pie Chart
-  new Chart(document.getElementById('pagePieChart'), {
+  createChart('pagePieChart', {
     type: 'pie',
     data: {
       labels: ['Published', 'Draft'],
@@ -371,27 +461,27 @@ wpsi_render_tab_content(
   });
 
   // Post Pie Chart
-  new Chart(document.getElementById('postPieChart'), {
-    type: 'pie',
-    data: {
-      labels: ['Published Posts', 'Draft Posts'],
-      datasets: [{
-        data: [
-          <?php echo count(array_filter($posts, fn($p) => strtolower($p['status']) === 'publish')); ?>,
-          <?php echo count(array_filter($posts, fn($p) => strtolower($p['status']) === 'draft')); ?>
-        ],
-        backgroundColor: ['#9b59b6', '#f39c12']
-      }]
-    }
-  });
+  // createChart('postPieChart', {
+  //   type: 'pie',
+  //   data: {
+  //     labels: ['Published Posts', 'Draft Posts'],
+  //     datasets: [{
+  //       data: [
+  //        <?php echo count(array_filter($posts, fn($p) => strtolower($p['status']) === 'publish')); ?>,
+  //        <?php echo count(array_filter($posts, fn($p) => strtolower($p['status']) === 'draft')); ?>
+  //      ],
+  //       backgroundColor: ['#9b59b6', '#f39c12']
+  //     }]
+  //   }
+  // });
+
   // Combined Bar Chart
-  new Chart(document.getElementById('combinedBarChart'), {
+  createChart('combinedBarChart', {
     type: 'bar',
     data: {
       labels: [
         "Posts", "Plugins", "Pages",
-        "Post Types", "Templates", "Shortcodes",
-        "REST APIs"
+        "Post Types", "Templates", "Shortcodes", "REST APIs"
       ],
       datasets: [{
         label: 'Total Items',
@@ -402,7 +492,7 @@ wpsi_render_tab_content(
           <?php echo count($data['post_types'] ?? []); ?>,
           <?php echo count($data['templates'] ?? []); ?>,
           <?php echo count($data['shortcodes'] ?? []); ?>,
-          <?php echo count($data['apis'] ?? []); ?>,
+          <?php echo count($data['apis'] ?? []); ?>
         ],
         backgroundColor: '#0073aa'
       }]
@@ -410,9 +500,7 @@ wpsi_render_tab_content(
     options: {
       responsive: true,
       plugins: {
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         tooltip: {
           mode: 'index',
           intersect: false
@@ -435,4 +523,6 @@ wpsi_render_tab_content(
       }
     }
   });
+
+});
 </script>
