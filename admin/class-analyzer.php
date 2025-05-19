@@ -171,13 +171,15 @@ class WP_Site_Inspector_Analyzer {
                     }
                 }
 
-                if (preg_match_all('/add_(action|filter)\s*\(\s*[\'\"]([^\'"]+)[\'\"]/', $line, $m, PREG_SET_ORDER)) {
-                    foreach ($m as $match) {
-                        $hooks[] = [
-                            'type' => ucfirst($match[1]),
-                            'hook' => $match[2],
-                            'file' => $relative . ' (line ' . ($i + 1) . ')'
-                        ];
+                if (strpos($relative, '/themes/' . $theme->get_stylesheet() . '/') !== false) {
+                    if (preg_match_all('/add_(action|filter)\s*\(\s*[\'\"]([^\'"]+)[\'\"]/', $line, $m, PREG_SET_ORDER)) {
+                        foreach ($m as $match) {
+                            $hooks[] = [
+                                'type' => ucfirst($match[1]),
+                                'hook' => $match[2],
+                                'file' => $relative . ' (line ' . ($i + 1) . ')'
+                            ];
+                        }
                     }
                 }
 
@@ -196,7 +198,7 @@ class WP_Site_Inspector_Analyzer {
                 }
 
                 foreach ($cdn_patterns as $lib) {
-                    if (stripos($line, $lib) !== false) {
+                    if (stripos($line, $lib) !== false && strpos($relative, '/themes/' . $theme->get_stylesheet() . '/') !== false) {
                         $cdn_links[] = [
                             'lib' => $lib,
                             'file' => $relative,
