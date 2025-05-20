@@ -308,69 +308,172 @@ wpsi_render_tab_content(
 
   // logs
   $log_file = WP_CONTENT_DIR . '/site-inspector.log';
- 
-  // Handle Clear Logs button submission
-  if (isset($_POST['wpsi_clear_logs']) && check_admin_referer('wpsi_clear_logs_action')) {
-    file_put_contents($log_file, ''); // Clears the file
+
+// Handle Clear Logs button submission
+if (isset($_POST['wpsi_clear_logs']) && check_admin_referer('wpsi_clear_logs_action')) {
+    file_put_contents($log_file, ''); // Clear log file
     $log_cleared = true;
-  }
- 
-  $log_rows = [];
-  if (file_exists($log_file)) {
+}
+
+$log_rows = [];
+if (file_exists($log_file)) {
     $log_lines = file($log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
- 
+
     foreach ($log_lines as $line) {
-      // Skip non-error system logs
-      if (preg_match('/^(Analysis|Theme|Plugins|Pages|Posts|Templates|Shortcodes)/i', $line)) {
-        continue;
-      }
- 
-      // Match our logger format
-      if (preg_match('/^\[(ERROR|WARNING|NOTICE|DEPRECATED|FATAL)\]\s([\d\-:\s]+)\s\-\s(.+?)(?:\s\(File:\s(.+?),\sLine:\s(\d+)\))?$/', $line, $matches)) {
-        $type = strtoupper($matches[1]);
-        $timestamp = trim($matches[2]);
-        $message = trim($matches[3]);
-        $file = isset($matches[4]) ? 'File: ' . trim($matches[4]) : '';
-        $line_no = isset($matches[5]) ? 'Line: ' . trim($matches[5]) : '';
- 
-        // Append file/line info if available
-        $full_message = $message;
-        if ($file || $line_no) {
-          $full_message .= ' (' . trim("$file $line_no") . ')';
+        if (preg_match('/^(Analysis|Theme|Plugins|Pages|Posts|Templates|Shortcodes)/i', $line)) {
+            continue;
         }
- 
-        $log_rows[] = [
-          esc_html($timestamp ? date('m/d/y, h:ia', strtotime($timestamp)) : 'N/A'),
-          esc_html($type),
-          esc_html($full_message),
-        ];
-      }
+
+        if (preg_match('/^\[(ERROR|WARNING|NOTICE|DEPRECATED|FATAL)\]\s([\d\-:\s]+)\s\-\s(.+?)(?:\s\(File:\s(.+?),\sLine:\s(\d+)\))?$/', $line, $matches)) {
+            $type = strtoupper($matches[1]);
+            $timestamp = trim($matches[2]);
+            $message = trim($matches[3]);
+            $file = isset($matches[4]) ? 'File: ' . trim($matches[4]) : '';
+            $line_no = isset($matches[5]) ? 'Line: ' . trim($matches[5]) : '';
+
+            $full_message = $message;
+            if ($file || $line_no) {
+                $full_message .= ' (' . trim("$file $line_no") . ')';
+            }
+
+            $ai_button = '<button class="button ask-ai-button" data-message="' . esc_attr($full_message) . '">Ask AI</button>';
+
+            $log_rows[] = [
+                esc_html($timestamp ? date('m/d/y, h:ia', strtotime($timestamp)) : 'N/A'),
+                esc_html($type),
+                esc_html($full_message),
+                $ai_button
+            ];
+        }
     }
-  }
- 
-  if (empty($log_rows)) {
-    $log_rows[] = ['—', 'INFO', 'No error logs found.'];
-  }
- 
-  // Optional message
-  if (!empty($log_cleared)) {
+}
+
+if (empty($log_rows)) {
+    $log_rows[] = ['—', 'INFO', 'No error logs found.', ''];
+}
+
+if (!empty($log_cleared)) {
     echo '<div class="notice notice-success"><p>Logs cleared successfully.</p></div>';
-  }
-  ob_start();
-  ?>
-  <div style="display: inline-block; margin-left: 20px;">
+}
+
+ob_start(); ?>
+<div style="display: inline-block; margin-left: 20px;">
     <form method="post" style="display: inline;">
-      <?php wp_nonce_field('wpsi_clear_logs_action'); ?>
-      <input type="submit" name="wpsi_clear_logs" class="button button-secondary" value="Clear Logs" />
+        <?php wp_nonce_field('wpsi_clear_logs_action'); ?>
+        <input type="submit" name="wpsi_clear_logs" class="button button-secondary" value="Clear Logs" />
     </form>
-  </div>
-  <?php
-  $clear_button = ob_get_clean();
- 
-  $custom_title = 'Error Logs' . $clear_button;
- 
-  wpsi_render_tab_content('logs', $custom_title, ['Date', 'Type', 'Message'], $log_rows);
-  ?>
+</div>
+<?php
+$clear_button = ob_get_clean();
+$custom_title = 'Error Logs' . $clear_button;
+
+// Render the log table
+wpsi_render_tab_content('logs', $custom_title, ['Date', 'Type', 'Message', 'AI'], $log_rows);
+?>
+<script>
+ jQuery(document).ready(function ($) {
+    // Only add once
+    if (!$('#wpsi-ai-chatbox').length) {
+        const chatHtml = `
+            <div id="wpsi-ai-chatbox" style="display:none; position:fixed; bottom:20px; right:20px; width:700px;
+                height:600px; background:#fff; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.2); 
+                z-index:10000;flex-direction:column; font-family:sans-serif;">
+
+                <div style="background:#4b6cb7; color:#fff; padding:12px 16px; font-weight:bold; position:relative;">
+                    AI Assistant
+                    <button id="wpsi-chat-close" style="position:absolute; right:10px; top:8px; background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">×</button>
+                </div>
+
+                <div id="wpsi-chat-messages" style="flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; background:#f7f7f7;">
+                    <!-- Messages -->
+                </div>
+
+                <div style="padding:10px; border-top:1px solid #ddd; display:flex;">
+                    <input type="text" id="wpsi-user-input" placeholder="Ask something..." style="flex:1; padding:8px 10px; border-radius:6px; border:1px solid #ccc; font-size:14px;">
+                    <button id="wpsi-send-btn" style="margin-left:8px; padding:8px 12px; background:#4b6cb7; color:#fff; border:none; border-radius:6px; cursor:pointer;">Send</button>
+                </div>
+            </div>
+        `;
+        $('body').append(chatHtml);
+    }
+
+    function appendMessage(who, message, bgColor, align = 'flex-start') {
+        const msgHtml = `
+            <div style="align-self: ${align}; background:${bgColor}; padding:10px 14px; border-radius:12px; max-width: 90%; word-wrap: break-word;">
+                <strong>${who}:</strong><br>${message}
+            </div>
+        `;
+        $('#wpsi-chat-messages').append(msgHtml);
+        $('#wpsi-chat-messages').scrollTop($('#wpsi-chat-messages')[0].scrollHeight);
+    }
+
+    function sendMessageToAI(message, $chat) {
+        appendMessage('You', message, '#d0ebff', 'flex-end' );
+
+        // Thinking placeholder
+const thinkingDiv = $(`
+    <div class="wpsi-ai-thinking" style="align-self:flex-start; background:#f0f0f0; padding:10px 14px; border-radius:12px; max-width:90%; display:flex; align-items:center; gap:10px;">
+        <div class="wpsi-spinner" style="width:16px; height:16px; border:3px solid #ccc; border-top:3px solid #4b6cb7; border-radius:50%; animation:spin 1s linear infinite;"></div>
+        <span>analyzing error</span>
+    </div>
+`);
+        $chat.append(thinkingDiv);
+        $chat.scrollTop($chat[0].scrollHeight);
+
+        $.ajax({
+            url: ajaxurl,
+            method: 'POST',
+            data: {
+                action: 'wpsi_ask_ai',
+                message: message,
+            },
+            success: function (response) {
+                thinkingDiv.remove();
+                const aiText = response?.data?.response?.replace(/\n/g, "<br>") || '';
+                const errorMsg = response?.data?.error || 'Something went wrong.';
+                appendMessage('AI', aiText || `<span style="color:red;">${errorMsg}</span>`, '#e7f5e6');
+            },
+            error: function (xhr, status, error) {
+                thinkingDiv.remove();
+                appendMessage('AJAX Failed', error, '#ffdede');
+            }
+        });
+    }
+
+    // Trigger chat box from any button with .ask-ai-button
+    $('.ask-ai-button').on('click', function () {
+        const message = $(this).data('message');
+        const $chat = $('#wpsi-chat-messages');
+        $('#wpsi-ai-chatbox').fadeIn();
+        if (message) sendMessageToAI(message, $chat);
+    });
+
+    // Manual input send
+    $(document).on('click', '#wpsi-send-btn', function () {
+        const input = $('#wpsi-user-input');
+        const message = input.val().trim();
+        if (!message) return;
+        input.val('');
+        sendMessageToAI(message, $('#wpsi-chat-messages'));
+    });
+
+    // Enter key triggers send
+    $(document).on('keypress', '#wpsi-user-input', function (e) {
+        if (e.which === 13) {
+            $('#wpsi-send-btn').click();
+        }
+    });
+
+    // Close button
+    $(document).on('click', '#wpsi-chat-close', function () {
+        $('#wpsi-ai-chatbox').fadeOut();
+    });
+});
+
+
+
+
+</script>
 </div>
 
 <!-- Export Buttons -->
