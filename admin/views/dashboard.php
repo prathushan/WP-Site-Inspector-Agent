@@ -75,9 +75,14 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.mi
           $page_number = floor($index / $per_page);
           echo "<tr class='page-row page-{$safe_id}-{$page_number}'>";
           echo "<td>" . ($index + 1) . "</td>"; // Serial number
-          foreach ($row as $col) {
-              echo "<td>" . htmlspecialchars($col, ENT_QUOTES) . "</td>";
-          }
+          foreach ($row as $i => $col) {
+  $is_last_column = ($i === array_key_last($row));
+  if ($is_last_column) {
+    echo "<td>$col</td>"; // Allow raw HTML for Ask AI button
+  } else {
+    echo "<td>" . htmlspecialchars($col, ENT_QUOTES) . "</td>";
+  }
+}
           echo "</tr>";
       }
   }
