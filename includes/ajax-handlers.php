@@ -10,73 +10,46 @@ function wpsi_handle_ask_ai() {
     }
 
     $message = sanitize_text_field($_POST['message']);
+    $api_key = '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';
 
-    // Define your API keys
-    $api_keys = [
-        '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', // Primary
-        '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'  // Fallback
-    ];
+    $response = wp_remote_post('https://openrouter.ai/api/v1/chat/completions', [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $api_key,
+            'Content-Type'  => 'application/json',
+            'HTTP-Referer'  => get_site_url(),
+            'X-Title'       => get_bloginfo('name'),
+        ],
+        'body' => json_encode([
+            'model' => 'deepseek/deepseek-chat-v3-0324:free',
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => 'You are a helpful assistant skilled in analyzing and fixing WordPress and PHP errors.',
+                ],
+                [
+                    'role' => 'user',
+                    'content' => $message,
+                ],
+            ]
+        ]),
+        'timeout' => 30,
+    ]);
 
-    $success = false;
-    $error = '';
-    $raw_body = '';
-
-    foreach ($api_keys as $key) {
-        $response = wp_remote_post('https://openrouter.ai/api/v1/chat/completions', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $key,
-                'Content-Type'  => 'application/json',
-                'HTTP-Referer'  => get_site_url(),
-                'X-Title'       => get_bloginfo('name'),
-            ],
-            'body' => json_encode([
-                'model' => 'deepseek/deepseek-chat-v3-0324:free',
-                'messages' => [
-                    [
-                        'role' => 'system',
-                        'content' => 'You are a helpful assistant skilled in analyzing and fixing WordPress and PHP errors.',
-                    ],
-                    [
-                        'role' => 'user',
-                        'content' => $message,
-                    ],
-                ]
-            ]),
-            'timeout' => 30,
-        ]);
-
-        if (is_wp_error($response)) {
-            $error = $response->get_error_message();
-            continue;
-        }
-
-        $raw_body = wp_remote_retrieve_body($response);
-        $decoded = json_decode($raw_body, true);
-
-        error_log("OpenRouter response: " . print_r($raw_body, true));
-
-        if (!empty($decoded['choices'][0]['message']['content'])) {
-            wp_send_json_success(['response' => $decoded['choices'][0]['message']['content']]);
-            $success = true;
-            break;
-        } elseif (!empty($decoded['error']['message'])) {
-            // If it's a rate limit or credit error, try next key
-            if (strpos($decoded['error']['message'], 'Rate limit') !== false || strpos($decoded['error']['message'], 'credit') !== false) {
-                $error = $decoded['error']['message'];
-                continue;
-            } else {
-                // Other errors shouldn't trigger fallback
-                wp_send_json_error(['error' => $decoded['error']['message']]);
-            }
-        }
+    if (is_wp_error($response)) {
+        wp_send_json_error(['error' => $response->get_error_message()]);
     }
 
-    // If both failed
-    if (!$success) {
-        wp_send_json_error([
-            'error' => 'All API keys failed. Last error: ' . $error,
-            'raw' => $raw_body
-        ]);
+    $body = wp_remote_retrieve_body($response);
+    $decoded = json_decode($body, true);
+
+    error_log("OpenRouter raw response: " . print_r($body, true));
+
+    if (!empty($decoded['choices'][0]['message']['content'])) {
+        wp_send_json_success(['response' => $decoded['choices'][0]['message']['content']]);
+    } elseif (!empty($decoded['error']['message'])) {
+        wp_send_json_error(['error' => $decoded['error']['message']]);
+    } else {
+        wp_send_json_error(['error' => 'No valid AI response or error message received.', 'raw' => $body]);
     }
 }
 
