@@ -1,4 +1,3 @@
-
 <?php
 if (!defined('ABSPATH')) exit;
 
@@ -9,8 +8,7 @@ $plugins = $data['plugins'];
 $pages = $data['pages'];
 $posts = $data['posts'];
 
-echo '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
-';
+echo '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
 ?>
 <h1>Wp Site Inspector</h1>
 
@@ -45,7 +43,6 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.mi
     <button class="tab-button" data-tab="apis">REST APIs</button>
     <button class="tab-button" data-tab="cdn">CDN Links</button>
     <button class="tab-button" data-tab="logs">Logs</button>
-
   </div>
 
   <?php
@@ -68,14 +65,11 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.mi
     }
     echo "</tr></thead><tbody>";
 
-    if (empty($rows)) {
-      echo "<tr><td colspan='" . (count($headers) + 1) . "' style='text-align:center;'>No " . $safe_title . " found on the site.</td></tr>";
-  } else {
-      foreach ($rows as $index => $row) {
-          $page_number = floor($index / $per_page);
-          echo "<tr class='page-row page-{$safe_id}-{$page_number}'>";
-          echo "<td>" . ($index + 1) . "</td>"; // Serial number
-          foreach ($row as $i => $col) {
+    foreach ($rows as $index => $row) {
+      $page_number = floor($index / $per_page);
+      echo "<tr class='page-row page-{$safe_id}-{$page_number}'>";
+      echo "<td>" . ($index + 1) . "</td>"; // Serial number
+      foreach ($row as $i => $col) {
   $is_last_column = ($i === array_key_last($row));
   if ($is_last_column) {
     echo "<td>$col</td>"; // Allow raw HTML for Ask AI button
@@ -83,14 +77,14 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.mi
     echo "<td>" . htmlspecialchars($col, ENT_QUOTES) . "</td>";
   }
 }
-          echo "</tr>";
-      }
-  }
 
-  echo "</tbody></table></div>";
+      echo "</tr>";
+    }
 
-  // Pagination controls (only if rows exist)
-  if ($total_pages > 1 && !empty($rows)) {
+    echo "</tbody></table></div>";
+
+    // Pagination controls
+    if ($total_pages > 1) {
       echo "<div class='pagination' id='pagination-$safe_id'></div>";
     }
 
@@ -104,7 +98,7 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.mi
       document.addEventListener('DOMContentLoaded', function() {
         const totalPages = <?= $total_pages ?>;
         const container = document.getElementById('pagination-<?= $safe_id ?>');
-        if (!container) return; 
+        if (!container) return; // Safety check
         const tabId = '<?= $safe_id ?>';
 
         function showPage(page) {
@@ -200,68 +194,69 @@ echo '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.mi
   wpsi_render_tab_content('builders', 'Theme Builders', ['Builder', 'Status'], $builder_rows);
 
   $plugin_rows = [];
-foreach ($data['plugins'] as $plugin) {
+  foreach ($data['plugins'] as $plugin) {
     $plugin_rows[] = [
-        esc_html($plugin['name']),
-        esc_html($plugin['status']),
-        esc_html($plugin['update']),
-        esc_html($plugin['last_update']),
+      esc_html($plugin['name']),
+      esc_html($plugin['status']),
+      esc_html($plugin['update']),
+      esc_html($plugin['last_update']),
+      esc_html($plugin['installed_on'])
     ];
-}
+  }
 
-wpsi_render_tab_content(
+  wpsi_render_tab_content(
     'plugins',
     'Plugins',
-    ['Plugin Name', 'Status', 'Update Status','Last Updated'],
+    ['Plugin Name', 'Status', 'Update Status', 'Last Updated', 'installed_on'],
     $plugin_rows
-);
+  );
 
 
- // Pages
-$page_rows = [];
-foreach ($pages as $page) {
-  $page_rows[] = [
-    esc_html($page['title']),
-    esc_html($page['status']),
-    esc_html($page['date']) 
-  ];
-}
-
-
-wpsi_render_tab_content('pages', 'Pages', ['Title', 'Status', 'Published At'], $page_rows);
-
-
-// Posts
-$post_rows = [];
-foreach ($posts as $post) {
-    $post_rows[] = [
-        esc_html($post['title']),
-        esc_html($post['status']),
-        esc_html($post['date'])
+  // Pages
+  $page_rows = [];
+  foreach ($pages as $page) {
+    $page_rows[] = [
+      esc_html($page['title']),
+      esc_html($page['status']),
+      esc_html($page['date']) // Add this line for publish date
     ];
-}
+  }
 
-wpsi_render_tab_content('posts', 'Posts', ['Title', 'Status', 'Published At'], $post_rows);
+  // Add "Published At" column
+  wpsi_render_tab_content('pages', 'Pages', ['Title', 'Status', 'Published At'], $page_rows);
 
 
- // Post Types
-$post_type_rows = [];
-foreach ($data['post_types'] as $k => $pt) {
-  $post_type_rows[] = [
-    esc_html($k),                      
-    esc_html($pt['label']),           
-    esc_html($pt['file']),            
-    esc_html($pt['used_count']),      
-    esc_html($pt['last_used'])        
-  ];
-}
+  // Posts
+  $post_rows = [];
+  foreach ($posts as $post) {
+    $post_rows[] = [
+      esc_html($post['title']),
+      esc_html($post['status']),
+      esc_html($post['date'])
+    ];
+  }
 
-wpsi_render_tab_content(
-  'post-types',
-  'Post Types',
-  ['Type', 'Label', 'Location', 'Used Count', 'Last Used (Date & Time)'],
-  $post_type_rows
-);
+  wpsi_render_tab_content('posts', 'Posts', ['Title', 'Status', 'Published At'], $post_rows);
+
+
+  // Post Types
+  $post_type_rows = [];
+  foreach ($data['post_types'] as $k => $pt) {
+    $post_type_rows[] = [
+      esc_html($k),                      // Post type slug (e.g., 'post', 'page', 'event')
+      esc_html($pt['label']),           // Label
+      esc_html($pt['file']),            // Source file
+      esc_html($pt['used_count']),      // Count of published items
+      esc_html($pt['last_used'])        // Last used date & time
+    ];
+  }
+
+  wpsi_render_tab_content(
+    'post-types',
+    'Post Types',
+    ['Type', 'Label', 'Location', 'Used Count', 'Last Used (Date & Time)'],
+    $post_type_rows
+  );
 
 
 
@@ -300,19 +295,33 @@ wpsi_render_tab_content(
 
   // REST APIs
   $api_rows = [];
-  foreach ($data['apis'] as $api) {
-    $used = $api['used_in'] ? implode('<br>', $api['used_in']) : 'Not used';
-    $api_rows[] = [$api['namespace'] . $api['route'], $api['file'] . ' (line ' . $api['line'] . ')', $used];
+
+  if (!empty($data['apis']) && is_array($data['apis'])) {
+    foreach ($data['apis'] as $api) {
+      $used = !empty($api['used_in']) ? implode('<br>', $api['used_in']) : 'Not used';
+      $api_rows[] = [
+        esc_html($api['namespace'] . $api['route']),
+        esc_html($api['file'] . ' (line ' . $api['line'] . ')'),
+        $used // allow HTML (line breaks)
+      ];
+    }
+    wpsi_render_tab_content('apis', 'REST API Endpoints', ['Endpoint', 'Location', 'Used In'], $api_rows);
+  } else {
+    wpsi_render_tab_content('apis', 'REST API Endpoints', ['Endpoint', 'Location', 'Used In'], $api_rows);
   }
-  wpsi_render_tab_content('apis', 'REST API Endpoints', ['Endpoint', 'Location', 'Used In'], $api_rows);
 
   // CDN Links
   $cdn_rows = [];
   foreach ($data['cdn_links'] as $cdn) $cdn_rows[] = [$cdn['lib'], $cdn['file']];
   wpsi_render_tab_content('cdn', 'CDN / JS Usage', ['Library', 'File'], $cdn_rows);
 
-  // logs
-  $log_file = WP_CONTENT_DIR . '/site-inspector.log';
+
+
+
+
+
+
+$log_file = WP_CONTENT_DIR . '/site-inspector.log';
 
 // Handle Clear Logs button submission
 if (isset($_POST['wpsi_clear_logs']) && check_admin_referer('wpsi_clear_logs_action')) {
@@ -486,10 +495,10 @@ const thinkingDiv = $(`
   <button id="exportExcel">Export to Excel <i class="fa-solid fa-file-export"></i></button>
 </div>
 
+
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
 
 <script>
   // Tab functionality
@@ -522,24 +531,7 @@ const thinkingDiv = $(`
   });
 
   // Plugin Pie Chart
-  document.addEventListener('DOMContentLoaded', function () {
-  // Helper to safely create charts
-  function createChart(id, config) {
-    const canvas = document.getElementById(id);
-    if (!canvas) {
-      console.warn(`Canvas with ID "${id}" not found.`);
-      return;
-    }
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      console.error(`Cannot get 2D context from canvas ID "${id}"`);
-      return;
-    }
-    new Chart(ctx, config);
-  }
-
-  // Plugin Pie Chart
-  createChart('pluginPieChart', {
+  new Chart(document.getElementById('pluginPieChart'), {
     type: 'pie',
     data: {
       labels: ['Active', 'Inactive'],
@@ -554,7 +546,7 @@ const thinkingDiv = $(`
   });
 
   // Page Pie Chart
-  createChart('pagePieChart', {
+  new Chart(document.getElementById('pagePieChart'), {
     type: 'pie',
     data: {
       labels: ['Published', 'Draft'],
@@ -569,27 +561,27 @@ const thinkingDiv = $(`
   });
 
   // Post Pie Chart
-  // createChart('postPieChart', {
-  //   type: 'pie',
-  //   data: {
-  //     labels: ['Published Posts', 'Draft Posts'],
-  //     datasets: [{
-  //       data: [
-  //        <?php echo count(array_filter($posts, fn($p) => strtolower($p['status']) === 'publish')); ?>,
-  //        <?php echo count(array_filter($posts, fn($p) => strtolower($p['status']) === 'draft')); ?>
-  //      ],
-  //       backgroundColor: ['#9b59b6', '#f39c12']
-  //     }]
-  //   }
-  // });
-
+  new Chart(document.getElementById('postPieChart'), {
+    type: 'pie',
+    data: {
+      labels: ['Published Posts', 'Draft Posts'],
+      datasets: [{
+        data: [
+          <?php echo count(array_filter($posts, fn($p) => strtolower($p['status']) === 'publish')); ?>,
+          <?php echo count(array_filter($posts, fn($p) => strtolower($p['status']) === 'draft')); ?>
+        ],
+        backgroundColor: ['#9b59b6', '#f39c12']
+      }]
+    }
+  });
   // Combined Bar Chart
-  createChart('combinedBarChart', {
+  new Chart(document.getElementById('combinedBarChart'), {
     type: 'bar',
     data: {
       labels: [
         "Posts", "Plugins", "Pages",
-        "Post Types", "Templates", "Shortcodes", "REST APIs"
+        "Post Types", "Templates", "Shortcodes",
+        "REST APIs"
       ],
       datasets: [{
         label: 'Total Items',
@@ -600,7 +592,7 @@ const thinkingDiv = $(`
           <?php echo count($data['post_types'] ?? []); ?>,
           <?php echo count($data['templates'] ?? []); ?>,
           <?php echo count($data['shortcodes'] ?? []); ?>,
-          <?php echo count($data['apis'] ?? []); ?>
+          <?php echo count($data['apis'] ?? []); ?>,
         ],
         backgroundColor: '#0073aa'
       }]
@@ -608,7 +600,9 @@ const thinkingDiv = $(`
     options: {
       responsive: true,
       plugins: {
-        legend: { display: false },
+        legend: {
+          display: false
+        },
         tooltip: {
           mode: 'index',
           intersect: false
@@ -631,6 +625,4 @@ const thinkingDiv = $(`
       }
     }
   });
-
-});
 </script>
