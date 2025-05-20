@@ -213,3 +213,17 @@ body {
     pointer-events: none;
     font-size: 14px;
   }
+
+   @keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+#wpsi-ai-chatbox {
+  display: flex;
+  flex-direction: column;
+}
+#wpsi-send-btn:disabled {
+    cursor: not-allowed;
+    background: #888 !important;
+}
+
