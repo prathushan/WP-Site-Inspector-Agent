@@ -214,7 +214,7 @@ body {
     font-size: 14px;
   }
 
-   @keyframes spin {
+  @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
@@ -226,4 +226,3 @@ body {
     cursor: not-allowed;
     background: #888 !important;
 }
-

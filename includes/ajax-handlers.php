@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-// AJAX handler function
+// AJAX handler for Ask AI
 function wpsi_handle_ask_ai() {
     header('Content-Type: application/json');
 
@@ -10,7 +10,12 @@ function wpsi_handle_ask_ai() {
     }
 
     $message = sanitize_text_field($_POST['message']);
-    $api_key = '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';
+    $api_key = get_option('wpsi_api_key', '');
+
+    // Validate API key
+    if (empty($api_key)) {
+        wp_send_json_error(['error' => 'API key is not configured. Please go to Site Inspector → Settings and add your API key.']);
+    }
 
     $response = wp_remote_post('https://openrouter.ai/api/v1/chat/completions', [
         'headers' => [
@@ -42,6 +47,7 @@ function wpsi_handle_ask_ai() {
     $body = wp_remote_retrieve_body($response);
     $decoded = json_decode($body, true);
 
+    // Log raw response for debugging
     error_log("OpenRouter raw response: " . print_r($body, true));
 
     if (!empty($decoded['choices'][0]['message']['content'])) {

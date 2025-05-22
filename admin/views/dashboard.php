@@ -483,11 +483,10 @@ const thinkingDiv = $(`
         $('#wpsi-ai-chatbox').fadeOut();
     });
 });
-
-
-
-
 </script>
+
+
+
 </div>
 
 <!-- Export Buttons -->
