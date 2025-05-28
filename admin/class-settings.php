@@ -12,8 +12,8 @@ class WP_Site_Inspector_Settings {
     public function add_settings_submenu() {
         add_submenu_page(
             'wp-site-inspector',
-            'Site Inspector Settings',
-            'Settings',
+            esc_html__('Site Inspector Settings', 'wp-site-inspector'),
+            esc_html__('Settings', 'wp-site-inspector'),
             'manage_options',
             'wpsi-settings',
             [$this, 'render_settings_page']
@@ -25,14 +25,14 @@ class WP_Site_Inspector_Settings {
 
         add_settings_section(
             'wpsi_settings_section',
-            'API Integration',
+            esc_html__('API Integration', 'wp-site-inspector'),
             null,
             'wpsi-settings'
         );
 
         add_settings_field(
             'wpsi_api_key',
-            'API Key',
+            esc_html__('API Key', 'wp-site-inspector'),
             [$this, 'api_key_field_html'],
             'wpsi-settings',
             'wpsi_settings_section'
@@ -47,10 +47,12 @@ class WP_Site_Inspector_Settings {
     public function render_settings_page() {
         ?>
         <div class="wrap">
-            <h1>Site Inspector - Settings</h1>
+            <h1><?php esc_html_e('Site Inspector - Settings', 'wp-site-inspector'); ?></h1>
 
             <?php if (isset($_GET['settings-updated']) && $_GET['settings-updated']): ?>
-                <div class="notice notice-success is-dismissible"><p>Settings saved.</p></div>
+                <div class="notice notice-success is-dismissible">
+                    <p><?php esc_html_e('Settings saved.', 'wp-site-inspector'); ?></p>
+                </div>
             <?php endif; ?>
 
             <form method="post" action="options.php">

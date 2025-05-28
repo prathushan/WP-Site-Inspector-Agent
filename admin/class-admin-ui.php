@@ -10,12 +10,17 @@ class WP_Site_Inspector_Admin_UI {
     }
 
     /**
+     * Load plugin textdomain for translations
+     */
+ 
+
+    /**
      * Register admin menu
      */
     public function register_menu() {
         add_menu_page(
-            'WP Site Inspector',
-            'Site Inspector',
+            __('WP Site Inspector', 'wp-site-inspector'),
+            __('Site Inspector', 'wp-site-inspector'),
             'manage_options',
             'wp-site-inspector',
             [$this, 'render_dashboard'],
@@ -30,9 +35,32 @@ class WP_Site_Inspector_Admin_UI {
     public function enqueue_assets($hook) {
         if ($hook !== 'toplevel_page_wp-site-inspector') return;
 
-        wp_enqueue_style('wpsi-style', plugin_dir_url(__FILE__) . 'assets/style.css');
-        wp_enqueue_script('wpsi-chart', plugin_dir_url(__FILE__) . 'assets/libs/Chart.min.js', [], null, true);
-        wp_enqueue_script('wpsi-main', plugin_dir_url(__FILE__) . 'assets/script.js', ['jquery'], null, true);
+        // Enqueue styles
+        wp_enqueue_style('wpsi-style', plugin_dir_url(__FILE__) . 'assets/style.css', [], '1.0.0');
+        
+        // Enqueue Chart.js from CDN
+        wp_enqueue_script(
+            'chartjs', 
+            'https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js',
+            [],
+            '3.7.0',
+            true
+        );
+        
+        // Enqueue main plugin script
+        wp_enqueue_script(
+            'wpsi-main',
+            plugin_dir_url(__FILE__) . 'assets/script.js',
+            ['jquery', 'chartjs'],
+            '1.0.0',
+            true
+        );
+
+        // Localize script with necessary data
+        wp_localize_script('wpsi-main', 'wpsiAjax', [
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wpsi_ajax_nonce')
+        ]);
     }
 
     /**

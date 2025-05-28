@@ -100,7 +100,7 @@ class WP_Site_Inspector_Ajax_Handler {
         $paginated_data = $this->paginate_data($data, $page);
         
         ob_start();
-        $this->render_table_rows($tab, $paginated_data['items']);
+        $this->render_table_rows($tab, $paginated_data['items'], $page);
         $html = ob_get_clean();
         
         wp_send_json_success([
@@ -138,9 +138,10 @@ class WP_Site_Inspector_Ajax_Handler {
         if (empty($tab)) {
             wp_send_json_error('Tab parameter is required');
         }
+        
         $analyzer = new WP_Site_Inspector_Analyzer();
         
-        // Get only the data needed for this tab
+        // Get data for this tab
         $data = $analyzer->analyze_tab($tab);
         
         if ($data === false) {
@@ -164,11 +165,11 @@ class WP_Site_Inspector_Ajax_Handler {
         ]);
     }
     
-    private function render_tab_content($tab, $data, $total_pages) {
+    private function render_tab_content($tab, $data, $total_pages, $custom_title = null) {
         $headers = $this->get_headers_for_tab($tab);
         
         echo "<div id='$tab' class='tab-content'>";
-        echo "<h2>" . esc_html($this->get_tab_title($tab)) . "</h2>";
+        echo "<h2>" . ($custom_title ? wp_kses_post($custom_title) : esc_html($this->get_tab_title($tab))) . "</h2>";
         echo "<div class='wpsi-table-wrap'>";
         
         // Table start
@@ -193,19 +194,25 @@ class WP_Site_Inspector_Ajax_Handler {
         echo "</div>";
     }
     
-    private function render_table_rows($tab, $data) {
+    private function render_table_rows($tab, $data, $page = 1) {
         if (empty($data) || !is_array($data)) {
             $colspan = count($this->get_headers_for_tab($tab)) + 1;
             echo "<tr><td colspan='" . esc_attr($colspan) . "'>" . esc_html__('No data available', 'wp-site-inspector') . "</td></tr>";
             return;
         }
-        $i=1;
-        foreach ($data as $row) {
+
+        // Calculate starting index based on current page
+        $page = max(1, intval($page)); // Ensure page is at least 1
+        $items_per_page = intval($this->items_per_page);
+        $starting_index = intval(($page - 1) * $items_per_page); // Ensure integer type
+        
+        foreach ($data as $index => $row) {
             echo "<tr>";
-            // echo "<td>" . esc_html($index + 1) . "</td>";
-            echo "<td>" . esc_html($i++) . "</td>";
+            // Calculate S.No independently of the data structure, ensuring integer type
+            $sno = intval($starting_index) + intval($index) + 1; // Ensure all operands are integers
+            echo "<td>" . esc_html($sno) . "</td>";
+            
             if (is_array($row)) {
-                // Convert arrays to strings for display
                 foreach ($row as $col) {
                     $display_value = is_array($col) ? implode(', ', $col) : $col;
                     echo "<td>" . wp_kses_post($display_value) . "</td>";
@@ -220,9 +227,40 @@ class WP_Site_Inspector_Ajax_Handler {
     
     private function render_pagination($tab, $total_pages) {
         echo "<div class='wpsi-pagination' data-tab='$tab' data-total-pages='$total_pages'>";
-        echo "<button class='button prev-page' disabled>&laquo; " . esc_html__('Previous', 'wp-site-inspector') . "</button>";
-        echo "<span class='page-info'>" . sprintf(esc_html__('Page %1$s of %2$s', 'wp-site-inspector'), '<span class="current-page">1</span>', $total_pages) . "</span>";
-        echo "<button class='button next-page'" . ($total_pages <= 1 ? ' disabled' : '') . ">" . esc_html__('Next', 'wp-site-inspector') . " &raquo;</button>";
+        
+        // Previous button
+        echo "<button class='pagination-btn prev-page' " . (1 <= 1 ? 'disabled' : '') . ">" . esc_html__('Previous', 'wp-site-inspector') . "</button>";
+        
+        // First page
+        echo "<button class='pagination-btn page-number active' data-page='1'>1</button>";
+        
+        if ($total_pages > 7) {
+            // If current page is 1, show first 5 pages
+            echo "<button class='pagination-btn page-number' data-page='2'>2</button>";
+            echo "<button class='pagination-btn page-number' data-page='3'>3</button>";
+            echo "<button class='pagination-btn page-number' data-page='4'>4</button>";
+            echo "<button class='pagination-btn page-number' data-page='5'>5</button>";
+            
+            if ($total_pages > 8) {
+                echo "<span class='pagination-ellipsis'>...</span>";
+            }
+            
+            // Last two pages
+            if ($total_pages > 7) {
+                if ($total_pages > 7) {
+                    echo "<button class='pagination-btn page-number' data-page='" . ($total_pages - 1) . "'>" . ($total_pages - 1) . "</button>";
+                }
+                echo "<button class='pagination-btn page-number' data-page='$total_pages'>$total_pages</button>";
+            }
+        } else {
+            // If less than 8 pages, show all numbers
+            for ($i = 2; $i <= $total_pages; $i++) {
+                echo "<button class='pagination-btn page-number' data-page='$i'>$i</button>";
+            }
+        }
+        
+        // Next button
+        echo "<button class='pagination-btn next-page' " . ($total_pages <= 1 ? 'disabled' : '') . ">" . esc_html__('Next', 'wp-site-inspector') . "</button>";
         echo "</div>";
     }
     
@@ -256,62 +294,6 @@ class WP_Site_Inspector_Ajax_Handler {
                 return [];
         }
     }
-    
-    // private function get_rows_for_tab($tab, $data) {
-    //     switch ($tab) {
-    //         case 'theme':
-    //             return [
-    //                 ['Active Theme', esc_html($data['name'] . ' v' . $data['version'])],
-    //                 ['Theme Type', esc_html($data['type'])]
-    //             ];
-            
-    //         case 'builders':
-    //             $rows = [];
-    //             foreach ($data as $builder) {
-    //                 $rows[] = [
-    //                     esc_html($builder['name']),
-    //                     esc_html($builder['status'])
-    //                 ];
-    //             }
-    //             return empty($rows) ? [['None Detected', '-']] : $rows;
-            
-    //         case 'plugins':
-    //             $rows = [];
-    //             foreach ($data as $plugin) {
-    //                 $rows[] = [
-    //                     esc_html($plugin['name']),
-    //                     esc_html($plugin['status']),
-    //                     esc_html($plugin['update']),
-    //                     esc_html($plugin['last_update']),
-    //                     esc_html($plugin['installed_on'])
-    //                 ];
-    //             }
-    //             return $rows;
-            
-    //             case 'pages':   
-    //                 $rows=[];
-    //                 foreach ($data as $page) {
-    //                     $rows[] = [
-    //                         esc_html($page['title']),
-    //                         esc_html($page['status']),
-    //                         esc_html($page['date'])
-    //                     ];
-    //                 }
-    //                 return $rows;
-    //                 // wpsi_render_tab_content(
-    //                 //     'pages',
-    //                 //     esc_html__('Pages', 'wp-site-inspector'),
-    //                 //     [esc_html__('Title', 'wp-site-inspector'), esc_html__('Status', 'wp-site-inspector'), esc_html__('Published At', 'wp-site-inspector')],
-    //                 //     $page_rows
-    //                 // );
-        
-
-    //         // Add more cases for other tabs...
-            
-    //         default:
-    //             return [];
-    //     }
-    // }
     
     private function get_tab_title($tab) {
         $titles = [

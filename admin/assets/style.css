@@ -226,3 +226,61 @@ body {
     cursor: not-allowed;
     background: #888 !important;
 }
+
+.wpsi-pagination {
+    margin-top: 20px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.wpsi-pagination .pagination-btn {
+    padding: 8px 12px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 36px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.wpsi-pagination .prev-page,
+.wpsi-pagination .next-page {
+    font-weight: 500;
+    padding: 8px 16px;
+    background: #fff;
+}
+
+.wpsi-pagination .pagination-btn:hover:not(:disabled) {
+    background: #e0e0e0;
+    border-color: #999;
+}
+
+.wpsi-pagination .pagination-btn.active {
+    background-color: #0073aa;
+    color: white;
+    border-color: #0073aa;
+    cursor: default;
+}
+
+.wpsi-pagination .pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5f5f5;
+}
+
+.wpsi-pagination .pagination-ellipsis {
+    padding: 8px 12px;
+    color: #666;
+    font-weight: bold;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

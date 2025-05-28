@@ -1,6 +1,9 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
+// Include the analyzer class
+require_once plugin_dir_path(dirname(__FILE__)) . 'class-analyzer.php';
+
 // Get initial chart data
 $analyzer = new WP_Site_Inspector_Analyzer();
 $plugins_data = $analyzer->analyze_tab('plugins');
@@ -126,6 +129,118 @@ jQuery(document).ready(function($) {
     let loadedTabs = {};
     let charts = {};
     
+    // Use localized AJAX URL
+    const ajaxurl = wpsiAjax.ajaxurl;
+    const nonce = wpsiAjax.nonce;
+    
+    // Function to handle AJAX errors
+    function handleAjaxError(jqXHR, textStatus, errorThrown) {
+        console.error('AJAX error details:', {
+            status: jqXHR.status,
+            statusText: jqXHR.statusText,
+            responseText: jqXHR.responseText,
+            textStatus: textStatus,
+            errorThrown: errorThrown
+        });
+
+        let errorMessage = 'Server communication error.';
+        if (jqXHR.status === 404) {
+            errorMessage = 'AJAX endpoint not found. Please check if your WordPress installation is working correctly.';
+        } else if (jqXHR.status === 502) {
+            errorMessage = 'Server is temporarily unavailable. Please try again in a few moments.';
+        } else if (jqXHR.status === 403) {
+            errorMessage = 'Access denied. Please refresh the page and try again.';
+        }
+
+        alert(errorMessage + ' Check browser console for details.');
+        hideLoading();
+    }
+    
+    // Function to load page content
+    function loadPageContent(tab, page) {
+        showLoading();
+        
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'wpsi_load_page',
+                tab: tab,
+                page: page,
+                nonce: nonce
+            },
+            success: function(response) {
+                try {
+                    if (response && response.success && response.data) {
+                        $(`#${tab}-tbody`).html(response.data.html);
+                        updatePaginationState(tab, page, response.data.total_pages);
+                    } else {
+                        console.error('Invalid response format:', response);
+                        alert('Error loading page content: Invalid response format');
+                    }
+                } catch (error) {
+                    console.error('Error processing response:', error);
+                    alert('Error processing server response');
+                }
+            },
+            error: handleAjaxError,
+            complete: function() {
+                hideLoading();
+            }
+        });
+    }
+    
+    // Function to load tab content
+    function loadTabContent(tabId) {
+        if (loadedTabs[tabId]) {
+            $('.tab-content').hide();
+            $(`#${tabId}`).show();
+            hideLoading();
+            return;
+        }
+        
+        showLoading();
+        
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'wpsi_load_tab_content',
+                tab: tabId,
+                nonce: nonce
+            },
+            success: function(response) {
+                try {
+                    if (response && response.success && response.data) {
+                        $('#tab-content-container').append(response.data.html);
+                        loadedTabs[tabId] = true;
+                        
+                        $('.tab-content').hide();
+                        $(`#${tabId}`).show();
+                        
+                        if (response.data.chartData) {
+                            initializeCharts(response.data.chartData);
+                        }
+                        
+                        initializePaginationHandlers(tabId);
+                    } else {
+                        console.error('Invalid response format:', response);
+                        alert('Error loading content: Invalid response format');
+                    }
+                } catch (error) {
+                    console.error('Error processing response:', error);
+                    alert('Error processing server response');
+                }
+            },
+            error: handleAjaxError,
+            complete: function() {
+                hideLoading();
+            }
+        });
+    }
+    
     // Initialize charts immediately with PHP data
     function initializeChartsOnLoad() {
         // Plugin Pie Chart
@@ -215,6 +330,31 @@ jQuery(document).ready(function($) {
     // Initialize charts on page load
     initializeChartsOnLoad();
 
+    // Function to initialize/update charts with new data
+    function initializeCharts(chartData) {
+        if (chartData.plugins) {
+            if (charts.plugins) {
+                charts.plugins.data.datasets[0].data = chartData.plugins.active_inactive;
+                charts.plugins.update();
+            }
+        }
+        
+        if (chartData.pages) {
+            if (charts.pages) {
+                charts.pages.data.datasets[0].data = chartData.pages.published_draft;
+                charts.pages.update();
+            }
+        }
+        
+        if (chartData.overview) {
+            if (charts.overview) {
+                charts.overview.data.labels = chartData.overview.labels;
+                charts.overview.data.datasets[0].data = chartData.overview.data;
+                charts.overview.update();
+            }
+        }
+    }
+
     // Function to show loading indicator
     function showLoading() {
         $('#wpsi-loading').show();
@@ -225,103 +365,73 @@ jQuery(document).ready(function($) {
         $('#wpsi-loading').hide();
     }
     
-    // Function to load page content
-    function loadPageContent(tab, page) {
-        showLoading();
-        
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'wpsi_load_page',
-                tab: tab,
-                page: page,
-                nonce: '<?php echo wp_create_nonce('wpsi_ajax_nonce'); ?>'
-            },
-            success: function(response) {
-                if (response.success) {
-                    $(`#${tab}-tbody`).html(response.data.html);
-                    updatePaginationState(tab, page, response.data.total_pages);
-                } else {
-                    alert('Error loading page content');
-                }
-            },
-            error: function() {
-                alert('Error communicating with server');
-            },
-            complete: function() {
-                hideLoading();
-            }
-        });
-    }
-    
     // Function to update pagination state
     function updatePaginationState(tab, currentPage, totalPages) {
         const $pagination = $(`.wpsi-pagination[data-tab="${tab}"]`);
         const $prevBtn = $pagination.find('.prev-page');
         const $nextBtn = $pagination.find('.next-page');
-        const $currentPageSpan = $pagination.find('.current-page');
+        const $pageButtons = $pagination.find('.page-number');
         
-        $currentPageSpan.text(currentPage);
+        // Remove all existing page number buttons
+        $pageButtons.not(':first').remove(); // Keep the first page
+        $('.pagination-ellipsis').remove();
+        
+        // Function to add page button
+        function addPageButton(pageNum, isActive = false) {
+            const activeClass = isActive ? ' active' : '';
+            return $(`<button class="pagination-btn page-number${activeClass}" data-page="${pageNum}">${pageNum}</button>`);
+        }
+        
+        // Always show first page
+        $pageButtons.first().toggleClass('active', currentPage === 1);
+        
+        if (totalPages > 7) {
+            // Show first set of pages
+            if (currentPage <= 4) {
+                for (let i = 2; i <= 5; i++) {
+                    addPageButton(i, i === currentPage).insertBefore($nextBtn);
+                }
+                $('<span class="pagination-ellipsis">...</span>').insertBefore($nextBtn);
+                addPageButton(totalPages - 1).insertBefore($nextBtn);
+                addPageButton(totalPages).insertBefore($nextBtn);
+            }
+            // Show last set of pages
+            else if (currentPage >= totalPages - 3) {
+                addPageButton(2).insertBefore($nextBtn);
+                $('<span class="pagination-ellipsis">...</span>').insertBefore($nextBtn);
+                for (let i = totalPages - 4; i <= totalPages; i++) {
+                    addPageButton(i, i === currentPage).insertBefore($nextBtn);
+                }
+            }
+            // Show middle pages
+            else {
+                addPageButton(2).insertBefore($nextBtn);
+                $('<span class="pagination-ellipsis">...</span>').insertBefore($nextBtn);
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+                    addPageButton(i, i === currentPage).insertBefore($nextBtn);
+                }
+                $('<span class="pagination-ellipsis">...</span>').insertBefore($nextBtn);
+                addPageButton(totalPages).insertBefore($nextBtn);
+            }
+        } else {
+            // Show all pages if total pages is 7 or less
+            for (let i = 2; i <= totalPages; i++) {
+                addPageButton(i, i === currentPage).insertBefore($nextBtn);
+            }
+        }
+        
+        // Update prev/next buttons
         $prevBtn.prop('disabled', currentPage <= 1);
         $nextBtn.prop('disabled', currentPage >= totalPages);
         
         $pagination.data('current-page', currentPage);
     }
     
-    // Function to load tab content
-    function loadTabContent(tabId) {
-        if (loadedTabs[tabId]) {
-            // If data is already loaded, just show it
-            $('.tab-content').hide();
-            $(`#${tabId}`).show();
-            return;
-        }
-        
-        showLoading();
-        
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'wpsi_load_tab_content',
-                tab: tabId,
-                nonce: '<?php echo wp_create_nonce('wpsi_ajax_nonce'); ?>'
-            },
-            success: function(response) {
-                if (response.success) {
-                    // Add content to container
-                    $('#tab-content-container').append(response.data.html);
-                    loadedTabs[tabId] = true;
-                    
-                    // Hide other tabs
-                    $('.tab-content').hide();
-                    $(`#${tabId}`).show();
-                    
-                    // Initialize charts if chart data is available
-                    if (response.data.chartData) {
-                        initializeCharts(response.data.chartData);
-                    }
-                    
-                    // Initialize pagination handlers
-                    initializePaginationHandlers(tabId);
-                } else {
-                    alert('Error loading content');
-                }
-            },
-            error: function() {
-                alert('Error communicating with server');
-            },
-            complete: function() {
-                hideLoading();
-            }
-        });
-    }
-    
     // Function to initialize pagination handlers
     function initializePaginationHandlers(tabId) {
         const $pagination = $(`.wpsi-pagination[data-tab="${tabId}"]`);
         
+        // Previous button handler
         $pagination.on('click', '.prev-page', function() {
             const currentPage = parseInt($pagination.data('current-page'));
             if (currentPage > 1) {
@@ -329,11 +439,22 @@ jQuery(document).ready(function($) {
             }
         });
         
+        // Next button handler
         $pagination.on('click', '.next-page', function() {
             const currentPage = parseInt($pagination.data('current-page'));
             const totalPages = parseInt($pagination.data('total-pages'));
             if (currentPage < totalPages) {
                 loadPageContent(tabId, currentPage + 1);
+            }
+        });
+        
+        // Page number buttons handler
+        $pagination.on('click', '.page-number', function() {
+            const pageNum = parseInt($(this).data('page'));
+            const currentPage = parseInt($pagination.data('current-page'));
+            
+            if (pageNum !== currentPage) {
+                loadPageContent(tabId, pageNum);
             }
         });
     }
