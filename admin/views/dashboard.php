@@ -22,9 +22,22 @@ $published_pages = count(array_filter($pages_data, fn($p) => $p['status'] === 'P
 $draft_pages = count($pages_data) - $published_pages;
 
 wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.0', true);
+
 ?>
 <div class="wrap">
     <h1><?php _e('WP Site Inspector', 'wp-site-inspector'); ?></h1>
+
+    <!-- Export Button -->
+    <!-- <div style="float: right; margin-top: -40px;">
+        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
+            <input type="hidden" name="action" value="wpsi_export_excel">
+            <?php wp_nonce_field('wpsi_export_excel_nonce'); ?>
+            <button type="submit" class="button button-primary">
+                <span class="dashicons dashicons-download" style="margin-top: 3px;"></span>
+                <?php _e('Export to Excel', 'wp-site-inspector'); ?>
+            </button>
+        </form>
+    </div> -->
 
     <!-- Loading Indicator -->
     <div id="wpsi-loading" class="wpsi-loading" style="display: none;">
@@ -69,6 +82,26 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
         <div id="tab-content-container">
             <!-- Content will be loaded here via AJAX -->
         </div>
+    </div>
+</div>
+
+<!-- AI Chat Box -->
+<div id="wpsi-ai-chatbox" style="display:none; position:fixed; bottom:20px; right:20px; width:700px;
+    height:600px; background:#fff; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.2); 
+    z-index:10000;flex-direction:column; font-family:sans-serif;">
+
+    <div style="background:#000; color:#fff; padding:12px 16px; font-weight:bold; position:relative;">
+        AI Code Assistant
+        <button id="wpsi-chat-close" style="position:absolute; right:10px; top:8px; background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">×</button>
+    </div>
+
+    <div id="wpsi-chat-messages" style="flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; background:#f7f7f7;">
+        <!-- Messages will be added here -->
+    </div>
+
+    <div style="padding:10px; border-top:1px solid #ddd; display:flex;">
+        <input type="text" id="wpsi-user-input" placeholder="Ask something..." style="flex:1; padding:8px 10px; border-radius:6px; border:1px solid #ccc; font-size:14px;">
+        <button id="wpsi-send-btn" style="margin-left:8px; padding:8px 12px; background:#4b6cb7; color:#fff; border:none; border-radius:6px; cursor:pointer;">Send</button>
     </div>
 </div>
 
@@ -121,8 +154,59 @@ canvas {
     opacity: 0.5;
     cursor: not-allowed;
 }
-</style>
 
+/* AI Chat Styles */
+#wpsi-ai-chatbox {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 700px;
+    height: 600px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 10000;
+    flex-direction: column;
+    font-family: sans-serif;
+}
+
+#wpsi-chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f7f7f7;
+}
+
+.wpsi-ai-thinking {
+    align-self: flex-start;
+    background: #f0f0f0;
+    padding: 10px 14px;
+    border-radius: 12px;
+    max-width: 90%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wpsi-spinner {
+    width: 16px;
+    height: 16px;
+    border: 3px solid #ccc;
+    border-top: 3px solid #4b6cb7;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> -->
 <script>
 jQuery(document).ready(function($) {
     let currentTab = 'theme';
@@ -470,5 +554,84 @@ jQuery(document).ready(function($) {
     
     // Load initial tab
     loadTabContent(currentTab);
+
+    // Add AI Chat functionality
+    function appendMessage(who, message, bgColor, align = 'flex-start') {
+        const msgHtml = `
+            <div style="align-self: ${align}; background:${bgColor}; padding:10px 14px; border-radius:12px; max-width: 90%; word-wrap: break-word;">
+                <strong>${who}:</strong><br>${message}
+            </div>
+        `;
+        $('#wpsi-chat-messages').append(msgHtml);
+        $('#wpsi-chat-messages').scrollTop($('#wpsi-chat-messages')[0].scrollHeight);
+    }
+
+    function sendMessageToAI(message, $chat) {
+        appendMessage('You', message, '#d0ebff', 'flex-end');
+
+        // Thinking placeholder
+        const thinkingDiv = $(`
+            <div class="wpsi-ai-thinking">
+                <div class="wpsi-spinner"></div>
+                <span>analyzing error</span>
+            </div>
+        `);
+        $chat.append(thinkingDiv);
+        $chat.scrollTop($chat[0].scrollHeight);
+
+        $.ajax({
+            url: ajaxurl,
+            method: 'POST',
+            data: {
+                action: 'wpsi_ask_ai',
+                message: message,
+                nonce: nonce
+            },
+            success: function(response) {
+                thinkingDiv.remove();
+                if (response.success && response.data) {
+                    const aiText = response.data.response ? response.data.response.replace(/\n/g, "<br>") : '';
+                    appendMessage('AI', aiText, '#e7f5e6');
+                } else {
+                    appendMessage('Error', 'Failed to get AI response', '#ffdede');
+                }
+            },
+            error: function(xhr, status, error) {
+                thinkingDiv.remove();
+                appendMessage('Error', 'Failed to communicate with server', '#ffdede');
+            }
+        });
+    }
+
+    // Open AI chat and send message if available
+    $(document).on('click', '.ask-ai-button', function () {
+        const message = $(this).data('message');
+        const $chat = $('#wpsi-chat-messages');
+
+        // Use flex to maintain column layout
+        $('#wpsi-ai-chatbox').css('display', 'flex');
+        if (message) sendMessageToAI(message, $chat);
+    });
+
+    // Manual input send
+    $(document).on('click', '#wpsi-send-btn', function() {
+        const input = $('#wpsi-user-input');
+        const message = input.val().trim();
+        if (!message) return;
+        input.val('');
+        sendMessageToAI(message, $('#wpsi-chat-messages'));
+    });
+
+    // Enter key triggers send
+    $(document).on('keypress', '#wpsi-user-input', function(e) {
+        if (e.which === 13) {
+            $('#wpsi-send-btn').click();
+        }
+    });
+
+    // Close button
+    $(document).on('click', '#wpsi-chat-close', function() {
+        $('#wpsi-ai-chatbox').fadeOut();
+    });
 });
 </script>
