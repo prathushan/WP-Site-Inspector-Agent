@@ -20,7 +20,7 @@ Think of it as your site’s x-ray machine — mapping everything from shortcode
 ✅ View full file paths & line numbers  
 ✅ Detect REST API calls & CDN links  
 ✅ Display all published pages, posts & CPTs  
-✅ Export results to `.csv`  
+✅ Export results to `.xls`  
 ✅ Admin-only access with security best practices  
 ✅ Fatal error detection + email alerts  
 ✅ Built-in AI chatbot for log analysis *(BYOK)*  
