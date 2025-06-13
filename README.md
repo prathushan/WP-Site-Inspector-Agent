@@ -59,9 +59,9 @@ Perfect for debugging legacy projects, onboarding new ones, or simply understand
 
 ## 🤖 Smarter Debugging with AI (NEW!)
 
-Bring intelligence to your debug flow using **Logs AI** and **Code AI** — both powered by your own API key (BYOK).
+Bring intelligence to your debug flow using **AI Code Assistant** and **Code AI** — both powered by your own API key (BYOK).
 
-### 🔍 Logs AI — Debug Smarter, Not Harder
+### 🔍  AI Code Assistant — Debug Smarter, Not Harder
 
 ![Ask AI Screenshot](./assets/Ask-AI.png)
 
@@ -119,9 +119,9 @@ Your tools. Your rules.
 
 ---
 
-## 📤 One-Click CSV Export
+## 📤 One-Click xls Export
 
-Export everything with a click — clean `.csv` format.
+Export everything with a click — clean `.xls` format.
 
 Great for:
 
@@ -186,7 +186,7 @@ No fluff. No guesswork. Just answers.
 
 ## 📃 License
 
-MIT — free to use, modify, and share.
+Distributed under the MIT License.
 
 ---
 
