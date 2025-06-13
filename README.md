@@ -201,11 +201,8 @@ We’d love your feedback or contributions!
 
 ## 🙌 Authors
 
-Made with ❤️ by:
-
-- [Prathusha](https://github.com/prathushan)  
-- [Prem](https://github.com/PremKumar-Softscripts)  
-- [Vinay](https://github.com/v-i-nay)  
+**Made with ❤️ by [Prathusha](https://github.com/prathushan), [Prem](https://github.com/PremKumar-Softscripts), and [Vinay](https://github.com/v-i-nay)**
+ 
 
 **Contributions welcome** 👉 [Open a PR or feature request](https://github.com/prathushan/WP-Site-Inspector/issues)
 
