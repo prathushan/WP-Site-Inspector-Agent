@@ -1,4 +1,5 @@
-# 🛠️ Say hello to **WP Site Inspector** – Your WordPress Debug & Discovery Co-Pilot!
+# 🛠️ Say hello to **WP Site Inspector** 
+ Your WordPress Debug & Discovery Co-Pilot!
 
 **WP Site Inspector** is an open-source WordPress plugin built for developers, freelancers, and agencies who want **instant insights** into what's going on under the hood of any WP site. Think of it as your site's x-ray machine — mapping everything from shortcodes and hooks to REST APIs, templates, and logs.
 
