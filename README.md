@@ -1,93 +1,176 @@
-<h1 align="center">🛠️ WP Site Inspector</h1>
-<p align="center">Your WordPress Debug & Discovery Co-Pilot</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WP Site Inspector</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      background-color: #fdfdfd;
+      color: #333;
+      margin: 0;
+      padding: 40px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-<p align="center">
-  <a href="https://github.com/prathushan/WP-Site-Inspector/stargazers"><img src="https://img.shields.io/github/stars/prathushan/WP-Site-Inspector?style=social" alt="GitHub Stars"></a>
-  <a href="https://github.com/prathushan/WP-Site-Inspector/issues"><img src="https://img.shields.io/github/issues/prathushan/WP-Site-Inspector?color=blue" alt="Issues"></a>
-  <a href="https://github.com/prathushan/WP-Site-Inspector/blob/main/LICENSE"><img src="https://img.shields.io/github/license/prathushan/WP-Site-Inspector?color=brightgreen" alt="License"></a>
-</p>
+    h1, h2, h3 {
+      color: #1a73e8;
+    }
 
----
+    h1 {
+      font-size: 2.2em;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 0.3em;
+      margin-bottom: 1em;
+    }
 
-## 🔎 What is WP Site Inspector?
+    h2 {
+      margin-top: 2em;
+      font-size: 1.8em;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.2em;
+    }
 
-**WP Site Inspector** is an open-source WordPress plugin that gives you developer-grade visibility into any WordPress site — with **zero config**.  
-Scan, debug, analyze, and even use AI to inspect shortcodes, APIs, logs, and more. 🚀
+    a {
+      color: #d63384;
+      text-decoration: none;
+    }
 
-> Think of it as your site’s X-ray vision — shortcodes, REST calls, templates, logs… all mapped out for you.
+    a:hover {
+      text-decoration: underline;
+    }
 
-<br>
+    ul, ol {
+      padding-left: 1.5em;
+    }
 
-<p align="center">
-  <img src="./assets/site-inspector.png" alt="WP Site Inspector UI" width="700">
-</p>
+    code {
+      background: #f2f2f2;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
 
----
+    .badge {
+      background: #1a73e8;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      margin-left: 10px;
+    }
 
-## ✨ Features at a Glance
+    .hero-img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 20px 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
 
-- ✅ One-click scan of active & parent themes
-- ✅ Detect shortcodes, hooks, REST calls, CDN links
-- ✅ Show full file paths & line numbers
-- ✅ Export any result to `.xls`
-- ✅ Multilingual support (🇬🇧🇫🇷🇪🇸)
-- ✅ Built-in AI BUG debugger (BYOK: Bring Your Own Key)
-- ✅ Fatal error detection with email alerts
-- ✅ Full site `.zip` backup inside plugin
-- ✅ Secured for admin-only access
+    .author {
+      display: inline-block;
+      margin-right: 10px;
+    }
 
----
+    .highlight {
+      background: #fff8e1;
+      border-left: 5px solid #ffc107;
+      padding: 10px 15px;
+      margin: 15px 0;
+      font-style: italic;
+    }
 
-## 🔍 Use Cases
+    .footer {
+      font-size: 0.9em;
+      color: #666;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+      margin-top: 40px;
+    }
 
-🧩 Theme & plugin audits  
-🛠️ Debugging strange site issues  
-🔄 Refactoring legacy projects  
-🤝 Dev handoffs & documentation  
-📋 QA & client reporting
+    .feature-list li {
+      margin-bottom: 8px;
+    }
 
----
+    .contributors {
+      margin-top: 10px;
+    }
 
-## 🧠 AI-Powered Debugging (New!)
+    .contributors img {
+      border-radius: 50%;
+      width: 40px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
 
-Supercharge your inspection with AI:
+  <h1>🛠️ WP Site Inspector – Your WordPress Debug & Discovery Co-Pilot</h1>
 
-### 💬 Logs AI  
-Ask questions like:
+  <p class="highlight">
+    Open-source plugin for developers, freelancers, and agencies. Get instant insights into shortcodes, hooks, APIs, logs, and more — no more guesswork.
+  </p>
 
-> “What’s this fatal error mean?”  
-> “Which plugin triggered the warning?”  
-> “How do I fix this deprecated function?”
+  <p>
+    → ⭐ <a href="https://github.com/prathushan/WP-Site-Inspector">Star us on GitHub</a><br />
+    → 🪲 <a href="https://github.com/prathushan/WP-Site-Inspector/issues">Report Bug</a> · 💡 <a href="https://github.com/prathushan/WP-Site-Inspector/issues">Request Feature</a>
+  </p>
 
-Supports 🔑 OpenAI · Anthropic · Gemini · DeepSeek
+  <img src="./assets/site-inspector.png" alt="Site Inspector Screenshot" class="hero-img" />
 
-<p align="center">
-  <img src="./assets/Ask-AI.png" alt="Ask AI Feature" width="600">
-</p>
+  <h2>✨ Features</h2>
+  <ul class="feature-list">
+    <li>✅ Scan active and parent themes (no config needed)</li>
+    <li>✅ List shortcodes, hooks, templates, post types</li>
+    <li>✅ Detect REST APIs & CDN links inside themes</li>
+    <li>✅ View file paths + line numbers</li>
+    <li>✅ Export results to CSV</li>
+    <li>✅ AI chatbot for logs & code (BYOK support)</li>
+    <li>✅ Multilingual UI (English, French, Spanish)</li>
+    <li>✅ One-click .zip full site backup</li>
+  </ul>
 
----
+  <h2>🤖 AI Debugging & Code Assistant</h2>
 
-### 💻 Code AI
+  <p>
+    Connect your own API key from <strong>OpenAI</strong>, <strong>Claude</strong>, or <strong>DeepSeek</strong> to analyze logs and refactor code with AI — right from the WP admin.
+  </p>
 
-Code AI pairs with your editor inside WordPress to:
+  <img src="./assets/Ask-AI.png" alt="Ask AI Screenshot" class="hero-img" />
+  <img src="./assets/Code-AI.png" alt="Code AI Screenshot" class="hero-img" />
+  <img src="./assets/byok.png" alt="BYOK" class="hero-img" />
 
-- Understand complex logic  
-- Modernize old code  
-- Spot bugs, inefficiencies, or security issues  
-- Auto-generate WP code snippets  
+  <h2>📦 Coming Soon</h2>
+  <ul>
+    <li>🔄 AI-powered auto-fix for logs</li>
+    <li>🔧 Plugin folder scanning</li>
+    <li>📚 File & function filtering</li>
+    <li>📊 WP-CLI support</li>
+    <li>🧠 Visual theme dependency maps</li>
+  </ul>
 
-<p align="center">
-  <img src="./assets/Code-AI.png" alt="Code AI Screenshot" width="600">
-</p>
+  <h2>⚙️ Installation</h2>
+  <ol>
+    <li>Download the ZIP from GitHub</li>
+    <li>Go to Plugins → Add New → Upload Plugin</li>
+    <li>Upload, install, activate</li>
+    <li>Start inspecting in WP Admin</li>
+  </ol>
 
-> ✅ Works with your **own API key** – no lock-in, no tracking
+  <h2>🙌 Authors</h2>
+  <p>
+    Made with ❤️ by:
+    <span class="author"><a href="https://github.com/prathushan">Prathusha</a></span>,
+    <span class="author"><a href="https://github.com/PremKumar-Softscripts">Prem</a></span>,
+    <span class="author"><a href="https://github.com/v-i-nay">Vinay</a></span>
+  </p>
 
----
-
-## 📦 Installation
-
-```bash
-1. Download .zip from GitHub
-2. Go to WP Admin → Plugins → Add New → Upload Plugin
-3. Upload and Activate
-4. Look for "WP Site Inspector" in your menu
+  <div class="footer">
+    📃 MIT License • Contact: prathusha.nammi@gmail.com • <a href="https://github.com/prathushan/WP-Site-Inspector/issues">Open an Issue</a>
+  </div>
+</body>
+</html>
