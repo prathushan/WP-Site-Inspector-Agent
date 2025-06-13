@@ -48,6 +48,19 @@ class WP_Site_Inspector_Analyzer
         }
     }
 
+    // private function analyze_theme() {
+    //     $theme = wp_get_theme();
+    //     $name = $theme->get('Name');
+    //     $version = $theme->get('Version');
+        
+    //     return [
+    //         'name' => $name . ' v' . $version,
+    //         'type' => file_exists(get_theme_root() . '/' . $theme->get_stylesheet() . '/theme.json') 
+    //             ? __('Block (FSE)', 'wp-site-inspector') 
+    //             : __('Classic', 'wp-site-inspector')
+    //     ];
+    // }
+
     private function analyze_theme() {
         $theme = wp_get_theme();
         $name = $theme->get('Name');
@@ -276,7 +289,6 @@ class WP_Site_Inspector_Analyzer
             return []; // Return empty array on error
         }
     }
-
     public function analyze_hooks() {
         try {
             global $wp_filter;
@@ -490,13 +502,12 @@ class WP_Site_Inspector_Analyzer
                     foreach ($patterns as $pattern) {
                         if (stripos($contents, $pattern) !== false) {
                             // Extract URL if possible
-                            preg_match('/(https?:\/\/[^\s\'"]+(?:' . preg_quote($pattern, '/') . ')[^\s\'"]+)/', $contents, $matches);
-                            $url = !empty($matches[1]) ? $matches[1] : '';
+                            // preg_match('/(https?:\/\/[^\s\'"]+(?:' . preg_quote($pattern, '/') . ')[^\s\'"]+)/', $contents, $matches);
+                            // $url = !empty($matches[1]) ? $matches[1] : '';
                             
                             $cdn_links[] = [
                                 $lib,
-                                $relative_path,
-                                $url
+                                $relative_path
                             ];
                             break; // Break inner loop once we find a match for this library
                         }
@@ -506,7 +517,7 @@ class WP_Site_Inspector_Analyzer
 
             // Return default message if no CDN links found
             if (empty($cdn_links)) {
-                return [['No CDN libraries', 'No external libraries detected', '']];
+               return [['No CDN libraries', 'No external libraries detected']];
             }
 
             // Remove duplicates
@@ -620,118 +631,12 @@ class WP_Site_Inspector_Analyzer
             </div>
             <?php
             $clear_button = ob_get_clean();
-
-            // Add AI chat functionality
-            ob_start();
-            ?>
-            <script>
-            jQuery(document).ready(function ($) {
-                // Only add once
-                if (!$('#wpsi-ai-chatbox').length) {
-                    const chatHtml = `
-                        <div id="wpsi-ai-chatbox" style="display:none; position:fixed; bottom:20px; right:20px; width:700px;
-                            height:600px; background:#fff; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.2); 
-                            z-index:10000;flex-direction:column; font-family:sans-serif;">
-
-                            <div style="background:#4b6cb7; color:#fff; padding:12px 16px; font-weight:bold; position:relative;">
-                                AI Assistant
-                                <button id="wpsi-chat-close" style="position:absolute; right:10px; top:8px; background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">×</button>
-                            </div>
-
-                            <div id="wpsi-chat-messages" style="flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; background:#f7f7f7;">
-                                <!-- Messages -->
-                            </div>
-
-                            <div style="padding:10px; border-top:1px solid #ddd; display:flex;">
-                                <input type="text" id="wpsi-user-input" placeholder="Ask something..." style="flex:1; padding:8px 10px; border-radius:6px; border:1px solid #ccc; font-size:14px;">
-                                <button id="wpsi-send-btn" style="margin-left:8px; padding:8px 12px; background:#4b6cb7; color:#fff; border:none; border-radius:6px; cursor:pointer;">Send</button>
-                            </div>
-                        </div>
-                    `;
-                    $('body').append(chatHtml);
-                }
-
-                function appendMessage(who, message, bgColor, align = 'flex-start') {
-                    const msgHtml = `
-                        <div style="align-self: ${align}; background:${bgColor}; padding:10px 14px; border-radius:12px; max-width: 90%; word-wrap: break-word;">
-                            <strong>${who}:</strong><br>${message}
-                        </div>
-                    `;
-                    $('#wpsi-chat-messages').append(msgHtml);
-                    $('#wpsi-chat-messages').scrollTop($('#wpsi-chat-messages')[0].scrollHeight);
-                }
-
-                function sendMessageToAI(message, $chat) {
-                    appendMessage('You', message, '#d0ebff', 'flex-end');
-
-                    // Thinking placeholder
-                    const thinkingDiv = $(`
-                        <div class="wpsi-ai-thinking" style="align-self:flex-start; background:#f0f0f0; padding:10px 14px; border-radius:12px; max-width:90%; display:flex; align-items:center; gap:10px;">
-                            <div class="wpsi-spinner" style="width:16px; height:16px; border:3px solid #ccc; border-top:3px solid #4b6cb7; border-radius:50%; animation:spin 1s linear infinite;"></div>
-                            <span>analyzing error</span>
-                        </div>
-                    `);
-                    $chat.append(thinkingDiv);
-                    $chat.scrollTop($chat[0].scrollHeight);
-
-                    $.ajax({
-                        url: ajaxurl,
-                        method: 'POST',
-                        data: {
-                            action: 'wpsi_ask_ai',
-                            message: message,
-                        },
-                        success: function (response) {
-                            thinkingDiv.remove();
-                            const aiText = response?.data?.response?.replace(/\n/g, "<br>") || '';
-                            const errorMsg = response?.data?.error || 'Something went wrong.';
-                            appendMessage('AI', aiText || `<span style="color:red;">${errorMsg}</span>`, '#e7f5e6');
-                        },
-                        error: function (xhr, status, error) {
-                            thinkingDiv.remove();
-                            appendMessage('AJAX Failed', error, '#ffdede');
-                        }
-                    });
-                }
-
-                // Trigger chat box from any button with .ask-ai-button
-                $(document).on('click', '.ask-ai-button', function () {
-                    const message = $(this).data('message');
-                    const $chat = $('#wpsi-chat-messages');
-                    $('#wpsi-ai-chatbox').fadeIn();
-                    if (message) sendMessageToAI(message, $chat);
-                });
-
-                // Manual input send
-                $(document).on('click', '#wpsi-send-btn', function () {
-                    const input = $('#wpsi-user-input');
-                    const message = input.val().trim();
-                    if (!message) return;
-                    input.val('');
-                    sendMessageToAI(message, $('#wpsi-chat-messages'));
-                });
-
-                // Enter key triggers send
-                $(document).on('keypress', '#wpsi-user-input', function (e) {
-                    if (e.which === 13) {
-                        $('#wpsi-send-btn').click();
-                    }
-                });
-
-                // Close button
-                $(document).on('click', '#wpsi-chat-close', function () {
-                    $('#wpsi-ai-chatbox').fadeOut();
-                });
-            });
-            </script>
-            <?php
-            $ai_chat = ob_get_clean();
+            wpsi_check_and_send_log_emails();
 
             return [
                 'rows' => $log_rows,
                 'notices' => $notices,
                 'clear_button' => $clear_button,
-                'ai_chat' => $ai_chat,
                 'custom_title' => 'Error Logs' . $clear_button
             ];
             
@@ -740,6 +645,56 @@ class WP_Site_Inspector_Analyzer
             return [];
         }
     }
+
+    function wpsi_check_and_send_log_emails() {
+    $log_file = WP_CONTENT_DIR . '/site-inspector.log';
+    $last_sent_index = (int) get_option('wpsi_last_sent_log_index', 0);
+    $new_logs_to_send = [];
+
+    if (file_exists($log_file)) {
+        $log_lines_all = file($log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $total_lines = count($log_lines_all);
+
+        if ($total_lines > $last_sent_index) {
+            $new_lines = array_slice($log_lines_all, $last_sent_index);
+
+            foreach ($new_lines as $line) {
+                if (preg_match('/^\[(ERROR|WARNING|NOTICE|DEPRECATED|FATAL)\]\s([\d\-:\s]+)\s\-\s(.+?)(?:\s\(File:\s(.+?),\sLine:\s(\d+)\))?$/', $line, $matches)) {
+                    $type = strtoupper($matches[1]);
+                    $timestamp = trim($matches[2]);
+                    $message = trim($matches[3]);
+                    $file = isset($matches[4]) ? 'File: ' . trim($matches[4]) : '';
+                    $line_no = isset($matches[5]) ? 'Line: ' . trim($matches[5]) : '';
+
+                    $full_message = $message;
+                    if ($file || $line_no) {
+                        $full_message .= ' (' . trim("$file $line_no") . ')';
+                    }
+
+                    $new_logs_to_send[] = "*[$type]* $full_message\nTimestamp: $timestamp";
+                }
+            }
+
+            if (!empty($new_logs_to_send)) {
+                $emails_raw = get_option('wpsi_alert_emails', '');
+                $emails = array_filter(array_map('trim', explode(',', $emails_raw)));
+
+                if (!empty($emails)) {
+                    $subject = '🛑 Site Inspector - New Log Entry Detected';
+                    $body = "The following new log entries were detected:\n\n" . implode("\n\n", $new_logs_to_send);
+                    $headers = ['Content-Type: text/plain; charset=UTF-8'];
+
+                    $from_email = 'alerts@' . parse_url(home_url(), PHP_URL_HOST);
+                    $headers[] = 'From: Site Inspector <' . $from_email . '>';
+
+                    wp_mail($emails, $subject, $body, $headers);
+                }
+            }
+
+            update_option('wpsi_last_sent_log_index', $total_lines);
+        }
+    }
+ }
 
     /**
      * Helper function to log errors in a structured format

@@ -1,0 +1,402 @@
+# Copyright (C) 2025 Prathusha, Prem Kumar, Vinay
+# This file is distributed under the same license as the Site Inspector plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Site Inspector 1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-site-inspector\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-05-22T19:15:38+02:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: wp-site-inspector\n"
+
+#. Plugin Name of the plugin
+#: wp-site-inspector.php
+#: admin/class-admin-ui.php:26
+msgid "Site Inspector"
+msgstr ""
+
+#. Description of the plugin
+#: wp-site-inspector.php
+msgid "Inspect active themes, post types, shortcodes, APIs, CDNs, templates, and more—visually."
+msgstr ""
+
+#. Author of the plugin
+#: wp-site-inspector.php
+msgid "Prathusha, Prem Kumar, Vinay"
+msgstr ""
+
+#: admin/class-admin-ui.php:25
+#: admin/views/dashboard.php:13
+msgid "WP Site Inspector"
+msgstr ""
+
+#: admin/class-analyzer.php:16
+msgid "Block (FSE)"
+msgstr ""
+
+#: admin/class-analyzer.php:16
+msgid "Classic"
+msgstr ""
+
+#: admin/class-analyzer.php:28
+#: admin/class-analyzer.php:29
+msgid "N/A"
+msgstr ""
+
+#: admin/class-analyzer.php:33
+#: admin/class-analyzer.php:61
+msgid "Active"
+msgstr ""
+
+#: admin/class-analyzer.php:33
+#: admin/class-analyzer.php:61
+msgid "Inactive"
+msgstr ""
+
+#: admin/class-analyzer.php:34
+msgid "Update available"
+msgstr ""
+
+#: admin/class-analyzer.php:34
+msgid "Up to date"
+msgstr ""
+
+#: admin/class-analyzer.php:69
+#: admin/class-analyzer.php:85
+msgid "Not Published"
+msgstr ""
+
+#: admin/class-analyzer.php:92
+msgid "Built in"
+msgstr ""
+
+#: admin/class-analyzer.php:92
+msgid "Plugin (guessed)"
+msgstr ""
+
+#: admin/class-analyzer.php:92
+msgid "functions.php or plugin"
+msgstr ""
+
+#: admin/class-settings.php:15
+msgid "Site Inspector Settings"
+msgstr ""
+
+#: admin/class-settings.php:16
+msgid "Settings"
+msgstr ""
+
+#: admin/class-settings.php:28
+msgid "API Integration"
+msgstr ""
+
+#: admin/class-settings.php:35
+msgid "API Key"
+msgstr ""
+
+#: admin/class-settings.php:50
+msgid "Site Inspector - Settings"
+msgstr ""
+
+#: admin/class-settings.php:54
+msgid "Settings saved."
+msgstr ""
+
+#: admin/views/dashboard.php:18
+msgid "Plugins Overview"
+msgstr ""
+
+#: admin/views/dashboard.php:22
+msgid "Pages Overview"
+msgstr ""
+
+#: admin/views/dashboard.php:26
+msgid "Total Overview"
+msgstr ""
+
+#: admin/views/dashboard.php:34
+#: admin/views/dashboard.php:180
+msgid "Theme Info"
+msgstr ""
+
+#: admin/views/dashboard.php:35
+msgid "Builders"
+msgstr ""
+
+#: admin/views/dashboard.php:36
+#: admin/views/dashboard.php:214
+msgid "Plugins"
+msgstr ""
+
+#: admin/views/dashboard.php:37
+#: admin/views/dashboard.php:236
+msgid "Pages"
+msgstr ""
+
+#: admin/views/dashboard.php:38
+#: admin/views/dashboard.php:252
+msgid "Posts"
+msgstr ""
+
+#: admin/views/dashboard.php:39
+#: admin/views/dashboard.php:270
+msgid "Post Types"
+msgstr ""
+
+#: admin/views/dashboard.php:40
+#: admin/views/dashboard.php:291
+msgid "Templates"
+msgstr ""
+
+#: admin/views/dashboard.php:41
+#: admin/views/dashboard.php:308
+msgid "Shortcodes"
+msgstr ""
+
+#: admin/views/dashboard.php:42
+#: admin/views/dashboard.php:324
+msgid "Hooks"
+msgstr ""
+
+#: admin/views/dashboard.php:43
+msgid "REST APIs"
+msgstr ""
+
+#: admin/views/dashboard.php:44
+msgid "CDN Links"
+msgstr ""
+
+#: admin/views/dashboard.php:45
+msgid "Logs"
+msgstr ""
+
+#: admin/views/dashboard.php:62
+msgid "S.No"
+msgstr ""
+
+#: admin/views/dashboard.php:192
+msgid "None Detected"
+msgstr ""
+
+#: admin/views/dashboard.php:196
+msgid "Theme Builders"
+msgstr ""
+
+#: admin/views/dashboard.php:197
+msgid "Builder"
+msgstr ""
+
+#: admin/views/dashboard.php:197
+#: admin/views/dashboard.php:217
+#: admin/views/dashboard.php:237
+#: admin/views/dashboard.php:253
+msgid "Status"
+msgstr ""
+
+#: admin/views/dashboard.php:216
+msgid "Plugin Name"
+msgstr ""
+
+#: admin/views/dashboard.php:218
+msgid "Update Status"
+msgstr ""
+
+#: admin/views/dashboard.php:219
+msgid "Last Updated"
+msgstr ""
+
+#: admin/views/dashboard.php:220
+msgid "Installed On"
+msgstr ""
+
+#: admin/views/dashboard.php:237
+#: admin/views/dashboard.php:253
+msgid "Title"
+msgstr ""
+
+#: admin/views/dashboard.php:237
+#: admin/views/dashboard.php:253
+msgid "Published At"
+msgstr ""
+
+#: admin/views/dashboard.php:272
+#: admin/views/dashboard.php:325
+msgid "Type"
+msgstr ""
+
+#: admin/views/dashboard.php:273
+msgid "Label"
+msgstr ""
+
+#: admin/views/dashboard.php:274
+#: admin/views/dashboard.php:344
+msgid "Location"
+msgstr ""
+
+#: admin/views/dashboard.php:275
+msgid "Used Count"
+msgstr ""
+
+#: admin/views/dashboard.php:276
+msgid "Last Used (Date & Time)"
+msgstr ""
+
+#: admin/views/dashboard.php:292
+msgid "Template Title"
+msgstr ""
+
+#: admin/views/dashboard.php:292
+#: admin/views/dashboard.php:309
+#: admin/views/dashboard.php:356
+msgid "File"
+msgstr ""
+
+#: admin/views/dashboard.php:299
+#: admin/views/dashboard.php:333
+msgid "Not used"
+msgstr ""
+
+#: admin/views/dashboard.php:309
+msgid "Shortcode"
+msgstr ""
+
+#: admin/views/dashboard.php:309
+#: admin/views/dashboard.php:344
+msgid "Used In"
+msgstr ""
+
+#: admin/views/dashboard.php:325
+msgid "Hook"
+msgstr ""
+
+#: admin/views/dashboard.php:325
+msgid "Registered In"
+msgstr ""
+
+#: admin/views/dashboard.php:343
+msgid "REST API Endpoints"
+msgstr ""
+
+#: admin/views/dashboard.php:344
+msgid "Endpoint"
+msgstr ""
+
+#: admin/views/dashboard.php:355
+msgid "CDN / JS Usage"
+msgstr ""
+
+#: admin/views/dashboard.php:356
+msgid "Library"
+msgstr ""
+
+#: admin/views/dashboard.php:388
+msgid "Ask AI"
+msgstr ""
+
+#: admin/views/dashboard.php:401
+#: includes/logger.php:25
+msgid "INFO"
+msgstr ""
+
+#: admin/views/dashboard.php:401
+msgid "No error logs found."
+msgstr ""
+
+#: admin/views/dashboard.php:405
+msgid "Logs cleared successfully."
+msgstr ""
+
+#: admin/views/dashboard.php:412
+msgid "Clear Logs"
+msgstr ""
+
+#: includes/ajax-handlers.php:10
+msgid "Missing message parameter."
+msgstr ""
+
+#: includes/ajax-handlers.php:20
+msgid "API key is not configured. Please go to Site Inspector → Settings and add your API key."
+msgstr ""
+
+#: includes/ajax-handlers.php:36
+msgid "You are a helpful assistant skilled in analyzing and fixing WordPress and PHP errors."
+msgstr ""
+
+#: includes/ajax-handlers.php:69
+msgid "No valid AI response or error message received."
+msgstr ""
+
+#: includes/logger.php:10
+msgid "ERROR"
+msgstr ""
+
+#: includes/logger.php:11
+msgid "WARNING"
+msgstr ""
+
+#: includes/logger.php:12
+msgid "PARSE"
+msgstr ""
+
+#: includes/logger.php:13
+msgid "NOTICE"
+msgstr ""
+
+#: includes/logger.php:14
+msgid "CORE_ERROR"
+msgstr ""
+
+#: includes/logger.php:15
+msgid "CORE_WARNING"
+msgstr ""
+
+#: includes/logger.php:16
+msgid "COMPILE_ERROR"
+msgstr ""
+
+#: includes/logger.php:17
+msgid "COMPILE_WARNING"
+msgstr ""
+
+#: includes/logger.php:18
+msgid "USER_ERROR"
+msgstr ""
+
+#: includes/logger.php:19
+msgid "USER_WARNING"
+msgstr ""
+
+#: includes/logger.php:20
+msgid "USER_NOTICE"
+msgstr ""
+
+#: includes/logger.php:21
+msgid "STRICT"
+msgstr ""
+
+#: includes/logger.php:22
+msgid "RECOVERABLE_ERROR"
+msgstr ""
+
+#: includes/logger.php:23
+msgid "DEPRECATED"
+msgstr ""
+
+#: includes/logger.php:24
+msgid "USER_DEPRECATED"
+msgstr ""
+
+#: includes/logger.php:30
+#, php-format
+msgid "[%1$s] %2$s - %3$s (File: %4$s, Line: %5$d)"
+msgstr ""
+
+#: includes/logger.php:50
+#, php-format
+msgid "[FATAL] %1$s - %2$s (File: %3$s, Line: %4$d)"
+msgstr ""

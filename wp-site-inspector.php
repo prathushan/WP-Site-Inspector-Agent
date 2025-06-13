@@ -23,6 +23,12 @@ require_once plugin_dir_path(__FILE__) . 'admin/class-analyzer.php';
 require_once plugin_dir_path(__FILE__) . 'includes/logger.php';
 require_once plugin_dir_path(__FILE__) . 'includes/ajax-handlers.php';
 require_once plugin_dir_path(__FILE__) . 'admin/class-settings.php';
+require_once plugin_dir_path(__FILE__) . 'admin/class-backup-export.php';
+// require_once plugin_dir_path(__FILE__) . 'includes/class-export-handler.php';
+
+add_action('wp_ajax_wpsi_manual_backup', function () {
+    include plugin_dir_path(__FILE__) . 'admin/views/backup.php';
+});
 
 function wp_site_inspector_textDomain() {
     load_plugin_textdomain('wp-site-inspector', false, dirname(plugin_basename(__FILE__)) . '/languages');
@@ -37,12 +43,16 @@ new WP_Site_Inspector_Settings();
 // Register AJAX handlers
 add_action('wp_ajax_wpsi_load_tab_content', 'wpsi_load_tab_content_callback');
 add_action('wp_ajax_wpsi_load_page', 'wpsi_load_page_callback');
+add_action('wp_ajax_wpsi_ask_ai', 'wpsi_handle_ai_chat');
+
+// Add export handler
+// add_action('admin_post_wpsi_export_excel', 'wpsi_handle_export_excel');
 
 function wpsi_load_tab_content_callback() {
     check_ajax_referer('wpsi_ajax_nonce', 'nonce');
     
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(['message' => 'Unauthorized access']);
+        wp_send_json_error(['message' => esc_html__('Unauthorized access', 'wp-site-inspector')]);
     }
     
     $ajax_handler = new WP_Site_Inspector_Ajax_Handler();
@@ -53,9 +63,33 @@ function wpsi_load_page_callback() {
     check_ajax_referer('wpsi_ajax_nonce', 'nonce');
     
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(['message' => 'Unauthorized access']);
+        wp_send_json_error(['message' => esc_html__('Unauthorized access', 'wp-site-inspector')]);
     }
     
     $ajax_handler = new WP_Site_Inspector_Ajax_Handler();
     $ajax_handler->handle_page_load();
+}
+
+function wpsi_handle_ai_chat() {
+    // Verify nonce
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wpsi_ajax_nonce')) {
+        wp_send_json_error(['error' => esc_html__('Invalid nonce', 'wp-site-inspector')]);
+        return;
+    }
+
+    // Get the message
+    $message = isset($_POST['message']) ? sanitize_text_field($_POST['message']) : '';
+    if (empty($message)) {
+        wp_send_json_error(['error' => esc_html__('No message provided', 'wp-site-inspector')]);
+        return;
+    }
+
+    // Here you would integrate with your AI service
+    // For now, we'll just echo back a simple response
+    $response = sprintf(
+        esc_html__('I received your message: %s', 'wp-site-inspector'),
+        esc_html($message)
+    );
+    
+    wp_send_json_success(['response' => $response]);
 }

@@ -9,14 +9,7 @@ class WP_Site_Inspector_Admin_UI {
         add_action('admin_init', [$this, 'register_settings']);
     }
 
-    /**
-     * Load plugin textdomain for translations
-     */
- 
 
-    /**
-     * Register admin menu
-     */
     public function register_menu() {
         add_menu_page(
             __('WP Site Inspector', 'wp-site-inspector'),
@@ -27,6 +20,22 @@ class WP_Site_Inspector_Admin_UI {
             'dashicons-chart-area',
             81
         );
+        add_submenu_page(
+        'wp-site-inspector',             
+        'Code AI Assistant',            
+        'Code AI',                       
+        'manage_options',                
+        'wpsi-code-ai',                  
+        [$this, 'render_code_ai_page']   
+       );
+       add_submenu_page(
+        'wp-site-inspector',           
+        'Site Backup',                
+        'Backup',                      
+        'manage_options',              
+        'wpsi-backup',                 
+        [$this, 'render_backup_page']  
+    );
     }
 
     /**
@@ -76,4 +85,13 @@ class WP_Site_Inspector_Admin_UI {
     public function render_dashboard() {
         include_once plugin_dir_path(__FILE__) . 'views/dashboard.php';
     }
+
+        public function render_code_ai_page() {
+    include_once plugin_dir_path(__FILE__) . 'views/code-ai.php';
+   }
+
+      public function render_backup_page() {
+    include plugin_dir_path(__FILE__) . 'views/backup.php';
+   }
+
 }
