@@ -27,17 +27,7 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
 <div class="wrap">
     <h1><?php _e('WP Site Inspector', 'wp-site-inspector'); ?></h1>
 
-    <!-- Export Button -->
-    <!-- <div style="float: right; margin-top: -40px;">
-        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
-            <input type="hidden" name="action" value="wpsi_export_excel">
-            <?php wp_nonce_field('wpsi_export_excel_nonce'); ?>
-            <button type="submit" class="button button-primary">
-                <span class="dashicons dashicons-download" style="margin-top: 3px;"></span>
-                <?php _e('Export to Excel', 'wp-site-inspector'); ?>
-            </button>
-        </form>
-    </div> -->
+
 
     <!-- Loading Indicator -->
     <div id="wpsi-loading" class="wpsi-loading" style="display: none;">
@@ -206,8 +196,67 @@ canvas {
     100% { transform: rotate(360deg); }
 }
 </style>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+// Global utility functions
+function showLoading() {
+    jQuery('#wpsi-loading').show();
+}
+
+function hideLoading() {
+    jQuery('#wpsi-loading').hide();
+}
+
+// Define exportToExcel function globally
+function exportToExcel() {
+    const $ = jQuery;
+    showLoading();
+    
+    $.ajax({
+        url: wpsiAjax.ajaxurl,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            action: 'wpsi_export_excel',
+            nonce: wpsiAjax.nonce
+        },
+        success: function(response) {
+            if (response.success && response.data) {
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                
+                // Add each tab's data as a worksheet
+                Object.keys(response.data).forEach(tabName => {
+                    const data = response.data[tabName];
+                    if (data && data.length > 0) {
+                        const ws = XLSX.utils.json_to_sheet(data);
+                        XLSX.utils.book_append_sheet(wb, ws, tabName);
+                    }
+                });
+                
+                // Generate and download the file
+                const fileName = 'wp-site-inspector-export-' + new Date().toISOString().slice(0,10) + '.xlsx';
+                XLSX.writeFile(wb, fileName);
+            } else {
+                alert('Error exporting data: ' + (response.data?.error || 'Unknown error'));
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('AJAX error details:', {
+                status: jqXHR.status,
+                statusText: jqXHR.statusText,
+                responseText: jqXHR.responseText,
+                textStatus: textStatus,
+                errorThrown: errorThrown
+            });
+            alert('Error exporting data. Please check console for details.');
+        },
+        complete: function() {
+            hideLoading();
+        }
+    });
+}
+
 jQuery(document).ready(function($) {
     let currentTab = 'theme';
     let loadedTabs = {};
@@ -439,16 +488,6 @@ jQuery(document).ready(function($) {
         }
     }
 
-    // Function to show loading indicator
-    function showLoading() {
-        $('#wpsi-loading').show();
-    }
-    
-    // Function to hide loading indicator
-    function hideLoading() {
-        $('#wpsi-loading').hide();
-    }
-    
     // Function to update pagination state
     function updatePaginationState(tab, currentPage, totalPages) {
         const $pagination = $(`.wpsi-pagination[data-tab="${tab}"]`);
@@ -554,6 +593,21 @@ jQuery(document).ready(function($) {
     
     // Load initial tab
     loadTabContent(currentTab);
+
+    // Add export button to the page
+    $('.wrap').append(`
+        <div class="export-buttons">
+            <button id="wpsi-export-excel" class="button button-primary">
+                <span class="dashicons dashicons-download"></span> Export All Data to Excel
+            </button>
+        </div>
+    `);
+
+    // Bind click event to export button
+    $(document).on('click', '#wpsi-export-excel', function(e) {
+        e.preventDefault();
+        exportToExcel();
+    });
 
     // Add AI Chat functionality
     function appendMessage(who, message, bgColor, align = 'flex-start') {
