@@ -24,7 +24,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/logger.php';
 require_once plugin_dir_path(__FILE__) . 'includes/ajax-handlers.php';
 require_once plugin_dir_path(__FILE__) . 'admin/class-settings.php';
 require_once plugin_dir_path(__FILE__) . 'admin/class-backup-export.php';
-// require_once plugin_dir_path(__FILE__) . 'includes/class-export-handler.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-export-handler.php';
 
 add_action('wp_ajax_wpsi_manual_backup', function () {
     include plugin_dir_path(__FILE__) . 'admin/views/backup.php';
