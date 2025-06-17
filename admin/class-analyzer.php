@@ -48,19 +48,6 @@ class WP_Site_Inspector_Analyzer
         }
     }
 
-    // private function analyze_theme() {
-    //     $theme = wp_get_theme();
-    //     $name = $theme->get('Name');
-    //     $version = $theme->get('Version');
-        
-    //     return [
-    //         'name' => $name . ' v' . $version,
-    //         'type' => file_exists(get_theme_root() . '/' . $theme->get_stylesheet() . '/theme.json') 
-    //             ? __('Block (FSE)', 'wp-site-inspector') 
-    //             : __('Classic', 'wp-site-inspector')
-    //     ];
-    // }
-
     private function analyze_theme() {
         $theme = wp_get_theme();
         $name = $theme->get('Name');
@@ -665,4 +652,46 @@ class WP_Site_Inspector_Analyzer
         // The email notification will be handled by WP_Site_Inspector_Email_Handler
         // which checks the error threshold and sends emails accordingly
     }
+	
+	public function get_plugin_status_counts() {
+    $plugins = $this->analyze_plugins();
+    $active = 0;
+    $inactive = 0;
+
+    foreach ($plugins as $plugin) {
+        $status = strtolower($plugin['status']);
+        if (strpos($status, 'active') !== false) {
+            $active++;
+        } else {
+            $inactive++;
+        }
+    }
+
+    return [
+        'active' => $active,
+        'inactive' => $inactive,
+    ];
+}
+
+public function get_page_status_counts() {
+    $pages = $this->analyze_pages();
+    $published = 0;
+    $draft = 0;
+
+    foreach ($pages as $page) {
+        $status = strtolower($page['status']);
+        if (strpos($status, 'publish') !== false) {
+            $published++;
+        } else {
+            $draft++;
+        }
+    }
+
+    return [
+        'published' => $published,
+        'draft' => $draft,
+    ];
+}
+
+
 }

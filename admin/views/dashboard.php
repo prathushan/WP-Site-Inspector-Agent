@@ -13,13 +13,9 @@ $templates_data = $analyzer->analyze_tab('templates');
 $shortcodes_data = $analyzer->analyze_tab('shortcodes');
 $apis_data = $analyzer->analyze_tab('apis');
 $post_types_data = $analyzer->analyze_tab('post-types');
+$plugin_counts = $analyzer->get_plugin_status_counts();
+$page_counts = $analyzer->get_page_status_counts();
 
-// Calculate chart data
-$active_plugins = count(array_filter($plugins_data, fn($p) => $p['status'] === 'Active'));
-$inactive_plugins = count($plugins_data) - $active_plugins;
-
-$published_pages = count(array_filter($pages_data, fn($p) => $p['status'] === 'Publish'));
-$draft_pages = count($pages_data) - $published_pages;
 
 wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.0', true);
 
@@ -383,7 +379,7 @@ jQuery(document).ready(function($) {
             data: {
                 labels: ['Active', 'Inactive'],
                 datasets: [{
-                    data: [<?php echo $active_plugins; ?>, <?php echo $inactive_plugins; ?>],
+                    data: [<?php echo $plugin_counts['active']; ?>, <?php echo $plugin_counts['inactive']; ?>],
                     backgroundColor: ['#2ecc71', '#e74c3c']
                 }]
             },
@@ -405,7 +401,7 @@ jQuery(document).ready(function($) {
             data: {
                 labels: ['Published', 'Draft'],
                 datasets: [{
-                    data: [<?php echo $published_pages; ?>, <?php echo $draft_pages; ?>],
+                    data: [<?php echo $page_counts['published']; ?>, <?php echo $page_counts['draft']; ?>],
                     backgroundColor: ['#3498db', '#95a5a6']
                 }]
             },
