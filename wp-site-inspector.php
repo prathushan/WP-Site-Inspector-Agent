@@ -25,6 +25,26 @@ require_once plugin_dir_path(__FILE__) . 'includes/ajax-handlers.php';
 require_once plugin_dir_path(__FILE__) . 'admin/class-settings.php';
 require_once plugin_dir_path(__FILE__) . 'admin/class-backup-export.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-export-handler.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-email-handler.php';
+
+// Add default settings
+add_action('admin_init', function() {
+    if (!get_option('wpsi_error_threshold')) {
+        update_option('wpsi_error_threshold', 1);
+    }
+    
+    // Get admin email or use a fallback
+    $admin_email = get_option('admin_email');
+    if (empty($admin_email) || !is_email($admin_email)) {
+        // Try to get site URL domain as fallback
+        $site_url = parse_url(get_site_url(), PHP_URL_HOST);
+        $admin_email = 'wordpress@' . $site_url;
+    }
+    
+    if (!get_option('wpsi_alert_emails')) {
+        update_option('wpsi_alert_emails', $admin_email);
+    }
+});
 
 add_action('wp_ajax_wpsi_manual_backup', function () {
     include plugin_dir_path(__FILE__) . 'admin/views/backup.php';
@@ -39,6 +59,7 @@ add_action('init', 'wp_site_inspector_textDomain');
 // Instantiate Admin UI
 new WP_Site_Inspector_Admin_UI();
 new WP_Site_Inspector_Settings();
+new WP_Site_Inspector_Email_Handler();
 
 // Register AJAX handlers
 add_action('wp_ajax_wpsi_load_tab_content', 'wpsi_load_tab_content_callback');

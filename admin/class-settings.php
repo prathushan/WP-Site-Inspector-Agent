@@ -34,6 +34,12 @@ class WP_Site_Inspector_Settings {
             'default' => ''
         ]);
 
+        register_setting('wpsi_settings_group', 'wpsi_error_threshold', [
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 1
+        ]);
+
         register_setting('wpsi_settings_group', 'wpsi_ai_provider', [
             'type' => 'string',
             'sanitize_callback' => 'sanitize_text_field',
@@ -70,6 +76,14 @@ class WP_Site_Inspector_Settings {
         );
 
         add_settings_field(
+            'wpsi_error_threshold',
+            'Error Threshold',
+            [$this, 'error_threshold_field_html'],
+            'wpsi-settings',
+            'wpsi_settings_section'
+        );
+
+        add_settings_field(
             'wpsi_ai_provider',
             'AI Provider',
             [$this, 'ai_provider_field_html'],
@@ -90,6 +104,12 @@ class WP_Site_Inspector_Settings {
         $emails = get_option('wpsi_alert_emails', '');
         echo "<input type='text' name='wpsi_alert_emails' value='" . esc_attr($emails) . "' style='width: 400px;' autocomplete='off'>";
         echo "<p class='description'>Enter multiple emails separated by commas (e.g. owner@example.com,dev@example.com)</p>";
+    }
+
+    public function error_threshold_field_html() {
+        $value = get_option('wpsi_error_threshold', 1);
+        echo "<input type='number' name='wpsi_error_threshold' value='" . esc_attr($value) . "' min='1' max='100' class='small-text'>";
+        echo "<p class='description'>Number of errors required before sending an email notification.</p>";
     }
 
     public function api_key_field_html() {
@@ -184,9 +204,12 @@ class WP_Site_Inspector_Settings {
     }
 
     public function render_settings_page() {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
         ?>
         <div class="wrap">
-            <h1>Site Inspector - Settings</h1>
+            <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
             <?php if (isset($_GET['settings-updated']) && $_GET['settings-updated']): ?>
                 <div class="notice notice-success is-dismissible"><p>Settings saved.</p></div>
             <?php endif; ?>

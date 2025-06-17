@@ -631,7 +631,6 @@ class WP_Site_Inspector_Analyzer
             </div>
             <?php
             $clear_button = ob_get_clean();
-            wpsi_check_and_send_log_emails();
 
             return [
                 'rows' => $log_rows,
@@ -645,56 +644,6 @@ class WP_Site_Inspector_Analyzer
             return [];
         }
     }
-
-    function wpsi_check_and_send_log_emails() {
-    $log_file = WP_CONTENT_DIR . '/site-inspector.log';
-    $last_sent_index = (int) get_option('wpsi_last_sent_log_index', 0);
-    $new_logs_to_send = [];
-
-    if (file_exists($log_file)) {
-        $log_lines_all = file($log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $total_lines = count($log_lines_all);
-
-        if ($total_lines > $last_sent_index) {
-            $new_lines = array_slice($log_lines_all, $last_sent_index);
-
-            foreach ($new_lines as $line) {
-                if (preg_match('/^\[(ERROR|WARNING|NOTICE|DEPRECATED|FATAL)\]\s([\d\-:\s]+)\s\-\s(.+?)(?:\s\(File:\s(.+?),\sLine:\s(\d+)\))?$/', $line, $matches)) {
-                    $type = strtoupper($matches[1]);
-                    $timestamp = trim($matches[2]);
-                    $message = trim($matches[3]);
-                    $file = isset($matches[4]) ? 'File: ' . trim($matches[4]) : '';
-                    $line_no = isset($matches[5]) ? 'Line: ' . trim($matches[5]) : '';
-
-                    $full_message = $message;
-                    if ($file || $line_no) {
-                        $full_message .= ' (' . trim("$file $line_no") . ')';
-                    }
-
-                    $new_logs_to_send[] = "*[$type]* $full_message\nTimestamp: $timestamp";
-                }
-            }
-
-            if (!empty($new_logs_to_send)) {
-                $emails_raw = get_option('wpsi_alert_emails', '');
-                $emails = array_filter(array_map('trim', explode(',', $emails_raw)));
-
-                if (!empty($emails)) {
-                    $subject = '🛑 Site Inspector - New Log Entry Detected';
-                    $body = "The following new log entries were detected:\n\n" . implode("\n\n", $new_logs_to_send);
-                    $headers = ['Content-Type: text/plain; charset=UTF-8'];
-
-                    $from_email = 'alerts@' . parse_url(home_url(), PHP_URL_HOST);
-                    $headers[] = 'From: Site Inspector <' . $from_email . '>';
-
-                    wp_mail($emails, $subject, $body, $headers);
-                }
-            }
-
-            update_option('wpsi_last_sent_log_index', $total_lines);
-        }
-    }
- }
 
     /**
      * Helper function to log errors in a structured format
@@ -712,5 +661,8 @@ class WP_Site_Inspector_Analyzer
         );
         
         error_log($log_entry . PHP_EOL, 3, $log_file);
+        
+        // The email notification will be handled by WP_Site_Inspector_Email_Handler
+        // which checks the error threshold and sends emails accordingly
     }
 }
