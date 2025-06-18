@@ -103,9 +103,13 @@ class WP_Site_Inspector_Analyzer
             $install_time = file_exists($plugin_path) ? date('Y-m-d H:i:s', filectime($plugin_path)) : __('N/A', 'wp-site-inspector');
             $update_time = file_exists($plugin_path) ? date('Y-m-d H:i:s', filemtime($plugin_path)) : __('N/A', 'wp-site-inspector');
             
+            // Use consistent status values
+            $status = is_plugin_active($slug) ? 'active' : 'inactive';
+            
             $plugins[] = [
                 'name' => $info['Name'],
-                'status' => is_plugin_active($slug) ? __('Active', 'wp-site-inspector') : __('Inactive', 'wp-site-inspector'),
+                'status' => $status,
+                'status_label' => $status === 'active' ? __('Active', 'wp-site-inspector') : __('Inactive', 'wp-site-inspector'),
                 'update' => $has_update ? __('Update available', 'wp-site-inspector') : __('Up to date', 'wp-site-inspector'),
                 'installed_on' => $install_time,
                 'last_update' => $update_time,
@@ -122,9 +126,13 @@ class WP_Site_Inspector_Analyzer
                 ? date('m/d/y, h:ia', strtotime($page->post_date)) 
                 : __('Not Published', 'wp-site-inspector');
             
+            // Use consistent status values
+            $status = strtolower($page->post_status);
+            
             $pages[] = [
                 'title' => $page->post_title,
-                'status' => ucfirst(__($page->post_status, 'wp-site-inspector')),
+                'status' => $status,
+                'status_label' => ucfirst(__($page->post_status, 'wp-site-inspector')),
                 'date' => $formatted_date
             ];
         }
@@ -652,46 +660,4 @@ class WP_Site_Inspector_Analyzer
         // The email notification will be handled by WP_Site_Inspector_Email_Handler
         // which checks the error threshold and sends emails accordingly
     }
-	
-	public function get_plugin_status_counts() {
-    $plugins = $this->analyze_plugins();
-    $active = 0;
-    $inactive = 0;
-
-    foreach ($plugins as $plugin) {
-        $status = strtolower($plugin['status']);
-        if (strpos($status, 'active') !== false) {
-            $active++;
-        } else {
-            $inactive++;
-        }
-    }
-
-    return [
-        'active' => $active,
-        'inactive' => $inactive,
-    ];
-}
-
-public function get_page_status_counts() {
-    $pages = $this->analyze_pages();
-    $published = 0;
-    $draft = 0;
-
-    foreach ($pages as $page) {
-        $status = strtolower($page['status']);
-        if (strpos($status, 'publish') !== false) {
-            $published++;
-        } else {
-            $draft++;
-        }
-    }
-
-    return [
-        'published' => $published,
-        'draft' => $draft,
-    ];
-}
-
-
 }

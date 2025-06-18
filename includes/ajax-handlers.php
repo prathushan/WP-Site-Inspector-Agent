@@ -321,10 +321,14 @@ class WP_Site_Inspector_Ajax_Handler {
         if ($tab === 'plugins' || $tab === 'theme') {
             $analyzer = new WP_Site_Inspector_Analyzer();
             $plugins_data = $analyzer->analyze_tab('plugins');
-            $active = count(array_filter($plugins_data, fn($p) => $p['status'] === 'Active'));
+            $active = count(array_filter($plugins_data, fn($p) => $p['status'] === 'active'));
             $inactive = count($plugins_data) - $active;
             
             $chart_data['plugins'] = [
+                'labels' => [
+                    __('Active', 'wp-site-inspector'),
+                    __('Inactive', 'wp-site-inspector')
+                ],
                 'active_inactive' => [$active, $inactive]
             ];
         }
@@ -333,10 +337,20 @@ class WP_Site_Inspector_Ajax_Handler {
         if ($tab === 'pages' || $tab === 'theme') {
             $analyzer = new WP_Site_Inspector_Analyzer();
             $pages_data = $analyzer->analyze_tab('pages');
-            $published = count(array_filter($pages_data, fn($p) => $p['status'] === 'Publish'));
-            $draft = count($pages_data) - $published;
+            
+            // Use the same calculation method as the initial load
+            $published = count(array_filter($pages_data, function($p) {
+                return strtolower($p['status']) === 'publish';
+            }));
+            $draft = count(array_filter($pages_data, function($p) {
+                return strtolower($p['status']) === 'draft';
+            }));
             
             $chart_data['pages'] = [
+                'labels' => [
+                    __('Published', 'wp-site-inspector'),
+                    __('Draft', 'wp-site-inspector')
+                ],
                 'published_draft' => [$published, $draft]
             ];
         }
@@ -347,13 +361,13 @@ class WP_Site_Inspector_Ajax_Handler {
             
             $overview_data = [
                 'labels' => [
-                    'Posts',
-                    'Plugins',
-                    'Pages',
-                    'Post Types',
-                    'Templates',
-                    'Shortcodes',
-                    'REST APIs'
+                    __('Posts', 'wp-site-inspector'),
+                    __('Plugins', 'wp-site-inspector'),
+                    __('Pages', 'wp-site-inspector'),
+                    __('Post Types', 'wp-site-inspector'),
+                    __('Templates', 'wp-site-inspector'),
+                    __('Shortcodes', 'wp-site-inspector'),
+                    __('REST APIs', 'wp-site-inspector')
                 ],
                 'data' => [
                     count($analyzer->analyze_tab('posts')),

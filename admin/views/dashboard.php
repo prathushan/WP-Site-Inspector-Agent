@@ -13,9 +13,19 @@ $templates_data = $analyzer->analyze_tab('templates');
 $shortcodes_data = $analyzer->analyze_tab('shortcodes');
 $apis_data = $analyzer->analyze_tab('apis');
 $post_types_data = $analyzer->analyze_tab('post-types');
-$plugin_counts = $analyzer->get_plugin_status_counts();
-$page_counts = $analyzer->get_page_status_counts();
 
+// Calculate chart data
+$active_plugins = count(array_filter($plugins_data, fn($p) => $p['status'] === 'active'));
+$inactive_plugins = count($plugins_data) - $active_plugins;
+
+// Ensure pages data is properly calculated
+$pages_data = $analyzer->analyze_tab('pages');
+$published_pages = count(array_filter($pages_data, function($p) {
+    return strtolower($p['status']) === 'publish';
+}));
+$draft_pages = count(array_filter($pages_data, function($p) {
+    return strtolower($p['status']) === 'draft';
+}));
 
 wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.0', true);
 
@@ -377,9 +387,12 @@ jQuery(document).ready(function($) {
         charts.plugins = new Chart(pluginCtx, {
             type: 'pie',
             data: {
-                labels: ['Active', 'Inactive'],
+                labels: [
+                    '<?php echo esc_js(__('Active', 'wp-site-inspector')); ?>',
+                    '<?php echo esc_js(__('Inactive', 'wp-site-inspector')); ?>'
+                ],
                 datasets: [{
-                    data: [<?php echo $plugin_counts['active']; ?>, <?php echo $plugin_counts['inactive']; ?>],
+                    data: [<?php echo $active_plugins; ?>, <?php echo $inactive_plugins; ?>],
                     backgroundColor: ['#2ecc71', '#e74c3c']
                 }]
             },
@@ -399,9 +412,12 @@ jQuery(document).ready(function($) {
         charts.pages = new Chart(pagesCtx, {
             type: 'pie',
             data: {
-                labels: ['Published', 'Draft'],
+                labels: [
+                    '<?php echo esc_js(__('Published', 'wp-site-inspector')); ?>',
+                    '<?php echo esc_js(__('Draft', 'wp-site-inspector')); ?>'
+                ],
                 datasets: [{
-                    data: [<?php echo $page_counts['published']; ?>, <?php echo $page_counts['draft']; ?>],
+                    data: [<?php echo $published_pages; ?>, <?php echo $draft_pages; ?>],
                     backgroundColor: ['#3498db', '#95a5a6']
                 }]
             },
@@ -421,9 +437,17 @@ jQuery(document).ready(function($) {
         charts.overview = new Chart(overviewCtx, {
             type: 'bar',
             data: {
-                labels: ['Posts', 'Plugins', 'Pages', 'Post Types', 'Templates', 'Shortcodes', 'REST APIs'],
+                labels: [
+                    '<?php echo esc_js(__('Posts', 'wp-site-inspector')); ?>',
+                    '<?php echo esc_js(__('Plugins', 'wp-site-inspector')); ?>',
+                    '<?php echo esc_js(__('Pages', 'wp-site-inspector')); ?>',
+                    '<?php echo esc_js(__('Post Types', 'wp-site-inspector')); ?>',
+                    '<?php echo esc_js(__('Templates', 'wp-site-inspector')); ?>',
+                    '<?php echo esc_js(__('Shortcodes', 'wp-site-inspector')); ?>',
+                    '<?php echo esc_js(__('REST APIs', 'wp-site-inspector')); ?>'
+                ],
                 datasets: [{
-                    label: 'Total Items',
+                    label: '<?php echo esc_js(__('Total Items', 'wp-site-inspector')); ?>',
                     data: [
                         <?php echo count($posts_data); ?>,
                         <?php echo count($plugins_data); ?>,
@@ -463,6 +487,7 @@ jQuery(document).ready(function($) {
     function initializeCharts(chartData) {
         if (chartData.plugins) {
             if (charts.plugins) {
+                charts.plugins.data.labels = chartData.plugins.labels;
                 charts.plugins.data.datasets[0].data = chartData.plugins.active_inactive;
                 charts.plugins.update();
             }
@@ -470,8 +495,12 @@ jQuery(document).ready(function($) {
         
         if (chartData.pages) {
             if (charts.pages) {
-                charts.pages.data.datasets[0].data = chartData.pages.published_draft;
-                charts.pages.update();
+                // Ensure we're using the correct data structure
+                if (Array.isArray(chartData.pages.published_draft) && chartData.pages.published_draft.length === 2) {
+                    charts.pages.data.labels = chartData.pages.labels;
+                    charts.pages.data.datasets[0].data = chartData.pages.published_draft;
+                    charts.pages.update();
+                }
             }
         }
         
