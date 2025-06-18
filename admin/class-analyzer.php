@@ -109,7 +109,7 @@ class WP_Site_Inspector_Analyzer
             $plugins[] = [
                 'name' => $info['Name'],
                 'status' => $status,
-                'status_label' => $status === 'active' ? __('Active', 'wp-site-inspector') : __('Inactive', 'wp-site-inspector'),
+//                 'status_label' => $status === 'active' ? __('Active', 'wp-site-inspector') : __('Inactive', 'wp-site-inspector'),
                 'update' => $has_update ? __('Update available', 'wp-site-inspector') : __('Up to date', 'wp-site-inspector'),
                 'installed_on' => $install_time,
                 'last_update' => $update_time,
@@ -132,7 +132,7 @@ class WP_Site_Inspector_Analyzer
             $pages[] = [
                 'title' => $page->post_title,
                 'status' => $status,
-                'status_label' => ucfirst(__($page->post_status, 'wp-site-inspector')),
+//                 'status_label' => ucfirst(__($page->post_status, 'wp-site-inspector')),
                 'date' => $formatted_date
             ];
         }
