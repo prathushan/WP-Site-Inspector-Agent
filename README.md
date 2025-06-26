@@ -28,33 +28,22 @@ It’s like an x-ray machine for your WordPress stack — exposing everything fr
 
 ## ✨ Features
 
-<table width="100%" cellspacing="0" cellpadding="0" style="border:none; border-collapse:collapse;">
-<tr style="border:none;">
-<td style="width:50%; vertical-align:top; border:none;">
+<img src="./assets/Wp-site-inspector-ui.png" alt="WP Site Inspector UI" align="right" width="280">
 
-✅ Scan active/parent themes without setup  
-✅ Instantly list shortcodes, hooks, templates, post types  
-✅ Detect REST API calls, CDN links & JS usage  
-✅ View file paths & line numbers  
-✅ List all published pages, posts & custom post types  
-✅ Export reports to `.xls`  
-✅ Admin-only access with secure design  
-✅ Fatal error detection + alert emails  
-✅ Built-in AI chatbot for log analysis (BYOK)  
-✅ AI-powered log auto-fix  
-✅ Multilingual UI: 🇬🇧 English, 🇩🇪 German, 🇪🇸 Spanish  
+- ✅ Scan active/parent themes without setup  
+- ✅ Instantly list shortcodes, hooks, templates, post types  
+- ✅ Detect REST API calls, CDN links & JS usage  
+- ✅ View file paths & line numbers  
+- ✅ List all published pages, posts & custom post types  
+- ✅ Export reports to `.xls`  
+- ✅ Admin-only access with secure design  
+- ✅ Fatal error detection + alert emails  
+- ✅ Built-in AI chatbot for log analysis (BYOK)  
+- ✅ AI-powered log auto-fix  
+- ✅ Multilingual UI: 🇬🇧 English, 🇩🇪 German, 🇪🇸 Spanish  
 
-</td>
-<td style="width:50%; text-align:center; vertical-align:top; border:none;">
-  <img src="./assets/Wp-site-inspector-ui.png" alt="WP Site Inspector UI" width="480">
-</td>
-</tr>
-</table>
 
 ---
-
-
-
 
 ## 🚀 Why Use It?
 
