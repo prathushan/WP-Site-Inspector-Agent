@@ -115,15 +115,15 @@ Perfect for:
 
 **Automatically detect and fix errors directly from logs.**
 
-- Parses your logs for **file names** and **line numbers**  
-- Opens affected files and **auto-fixes** issues with LLMs  
-- Takes an automatic backup (`.bak`) of the file  
-- If anything goes wrong, **auto-restores the original** version  
-- Compatible with all major WordPress themes and plugins  
-- Handles common errors like undefined variables, missing includes, deprecated functions  
-- Displays status updates: Pending, Fulfilled, Failed  
-- Works with custom-coded themes and plugins   
-- Designed for both novice and advanced developers  
+✨Parses your logs for **file names** and **line numbers**  
+✨Opens affected files and **auto-fixes** issues with LLMs  
+✨Takes an automatic backup (`.bak`) of the file  
+✨If anything goes wrong, **auto-restores the original** version  
+✨Compatible with all major WordPress themes and plugins  
+✨Handles common errors like undefined variables, missing includes, deprecated functions  
+✨Displays status updates: Pending, Fulfilled, Failed  
+✨Works with custom-coded themes and plugins   
+✨Designed for both novice and advanced developers  
 
 > Powered by your preferred model: OpenAI, Claude, Gemini, DeepSeek, or OpenRouter — via your own API key (BYOK)
 
