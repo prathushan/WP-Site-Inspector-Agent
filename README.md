@@ -1,209 +1,247 @@
-# 🛠️ WP Site Inspector — Your WordPress Debug & Discovery Co-Pilot
+<h1 align="center">🛠️ WP Site Inspector</h1>
 
-**WP Site Inspector** is an open-source WordPress plugin for developers, freelancers, and agencies who need **instant insights** into what’s happening under the hood of any WordPress site.
+<p align="center">
+  <strong>Your WordPress Debug & Discovery Co-Pilot</strong><br>
+  <em>Audit themes, plugins, REST APIs, and fix errors with AI — in seconds.</em>
+</p>
 
-Think of it as your site’s x-ray machine — mapping everything from shortcodes and hooks to REST APIs, templates, and logs.
+<p align="center">
+  <a href="https://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT"></a>
+  <a href="https://github.com/prathushan/WP-Site-Inspector/releases"><img src="https://img.shields.io/badge/version-v1.0.0-blue?style=flat-square" alt="Manual Version Badge"></a>
+  <a href="https://github.com/prathushan/WP-Site-Inspector/stargazers"><img src="https://img.shields.io/github/stars/prathushan/WP-Site-Inspector?color=orange" alt="GitHub Stars"></a>
+  <a href="https://github.com/prathushan/WP-Site-Inspector/issues"><img src="https://img.shields.io/github/issues/prathushan/WP-Site-Inspector?color=red" alt="GitHub Issues"></a>
+  <a href="#"><img src="https://img.shields.io/badge/WordPress-Tested-blue?logo=wordpress" alt="WordPress Tested"></a>
+</p>
 
-> ⚡ No more digging through files. No more flying blind.
+---
 
-**👉 [⭐ Star us on GitHub](https://github.com/prathushan/WP-Site-Inspector)**  
-**🐞 [Report a Bug](https://github.com/prathushan/WP-Site-Inspector/issues)** · 💡 [Request a Feature](https://github.com/prathushan/WP-Site-Inspector/issues)
+## 📖 Overview
 
-![Site Inspector Screenshot](./assets/site-inspector.png)
+**WP Site Inspector** is an open-source WordPress plugin built for developers, freelancers, and agencies who need **instant, actionable insights** into any WordPress site.
+
+It’s like an x-ray machine for your WordPress stack — exposing everything from shortcodes and hooks to REST APIs, templates, and hidden issues.
+
+> ⚡ No more digging through theme files.  
+> 🧠 No more guessing where bugs live.
 
 ---
 
 ## ✨ Features
 
-✅ Scan active and parent themes — *no setup needed*  
-✅ Instantly list shortcodes, hooks, templates, post types  
-✅ View full file paths & line numbers  
-✅ Detect REST API calls & CDN links  
-✅ Display all published pages, posts & CPTs  
-✅ Export results to `.xls`  
-✅ Admin-only access with security best practices  
-✅ Fatal error detection + email alerts  
-✅ Built-in AI chatbot for log analysis *(BYOK)*  
-✅ Multilingual UI: English, French, Spanish  
-✅ One-click full site `.zip` backup
+<table width="100%" cellspacing="0" cellpadding="0" style="border: none; border-collapse: collapse;">
+<tr style="border: none;">
+<td style="border: none;">
+
+- ✅ Scan active/parent themes without setup  
+- ✅ Instantly list shortcodes, hooks, templates, post types  
+- ✅ Detect REST API calls, CDN links & JS usage  
+- ✅ View file paths & line numbers  
+- ✅ List all published pages, posts & custom post types  
+- ✅ Export reports to `.xls`  
+- ✅ Admin-only access with secure design  
+- ✅ Fatal error detection + alert emails  
+- ✅ Built-in AI chatbot for log analysis (BYOK)  
+- ✅ AI-powered log auto-fix  
+- ✅ Multilingual UI: 🇬🇧 English, 🇩🇪 German, 🇪🇸 Spanish  
+
+</td>
+<td style="text-align:center; vertical-align:top; padding-left:20px; border: none;">
+  <img src="./assets/Wp-site-inspector-ui.png" alt="WP Site Inspector UI" width="500">
+</td>
+</tr>
+</table>
 
 ---
+
 
 ## 🚀 Why Use It?
 
 If you've ever said:
 
-> “What’s even happening on this site?”  
-> “Where is this shortcode defined?”  
-> “What template is this page using?”  
-> “Which plugin is breaking the homepage?”
+- “What’s even happening on this site?”  
+- “Where is this shortcode defined?”  
+- “Which plugin is breaking the homepage?”  
 
 Then **WP Site Inspector** is made for you.
 
-Perfect for debugging legacy projects, onboarding new ones, or simply understanding someone else’s codebase — this plugin gives you **superpowers**.
+Perfect for:  
+🧑‍💻 Freelancers • 🧪 QA Engineers • 🏢 Agencies • 💡 WP Contributors • 👩‍🎓 Students
 
 ---
 
 ## 🔍 Use Cases
 
-- 🧩 Auditing undocumented WP themes  
-- 🛠️ Debugging custom features with clarity  
-- 🔄 Refactoring old code safely  
-- 🤝 Handoff-ready documentation  
-- 📋 Exporting a complete technical site map  
-
-**Ideal for:**  
-🧑‍💻 Freelancers · 🧪 QA Engineers · 🏢 Agencies · 💡 WP Contributors · 👩‍🎓 Students
+- 🧩 Auditing undocumented themes & templates  
+- 🛠️ Debugging custom features  
+- 🔄 Refactoring legacy code  
+- 🤝 Creating handoff-ready documentation  
+- 📋 Generating a technical site map  
 
 ---
 
-## 🤖 Smarter Debugging with AI (NEW!)
+## 🤖 AI Code Assistant
 
-Bring intelligence to your debug flow using **AI Code Assistant** and **Code AI** — both powered by your own API key (BYOK).
+<table width="100%" cellspacing="0" cellpadding="0" style="border:none; border-collapse:collapse;">
+<tr style="border:none;">
+<td style="width:50%; vertical-align:top; border:none;">
 
-### 🔍  AI Code Assistant — Debug Smarter, Not Harder
+> Like ChatGPT for your error logs — inside WordPress.
 
-![Ask AI Screenshot](./assets/Ask-AI.png)
+- Ask: “Why did this error happen?”  
+- Suggest fixes for deprecated or fatal code  
+- Get file-level insights on PHP warnings or notices  
+- Understand complex or undocumented functions  
+- Get explanations for deprecation notices and warnings  
+- Identify which plugin/theme generated the error  
+- Copy fix suggestions directly into your theme/plugin  
+- Use your own API key (BYOK) for secure, private debugging  
 
-Integrate with:
-
-- 🔑 OpenAI (ChatGPT)  
-- 🔑 Anthropic (Claude)  
-- 🔑 DeepSeek, Gemini, or OpenRouter-compatible models
-
-Ask:
-
-> “Why did this error happen?”  
-> “Which plugin triggered this warning?”  
-> “How do I fix this deprecated function?”
-
-🧠 It’s like **ChatGPT for your error logs** — secure, private, and built into WP.
-
----
-
-### 💻 Code AI — Your AI Pair Programmer in WP
-
-![Code AI Screenshot](./assets/Code-AI.png)
-
-Directly inside your theme and plugin files — BYOK-powered.
-
-- 🧩 Understand complex or legacy functions  
-- 🛠️ Refactor outdated logic  
-- 🧪 Spot bugs and security issues  
-- ✍️ Generate WP-specific snippets  
-- 🔍 Evaluate logs inline
-
-> Example queries:  
-> “What does this function do?”  
-> “Rewrite this as a shortcode”  
-> “Generate WP_Query for 5 products”
-
-⚙️ Powered by **your choice of LLM** — no vendor lock-in.
-
-![BYOK Illustration](./assets/byok.png)
+</td>
+<td style="width:50%; text-align:center; vertical-align:top; border:none;">
+  <img src="./assets/Ask ai.png" alt="Ask AI Screenshot" width="480">
+</td>
+</tr>
+</table>
 
 ---
 
-## ✅ Unified BYOK Support
 
-No subscriptions, no limits — just plug in your API key.
 
-**Supported models:**
+### ⚡ AI-powered log auto-fix 
 
-- OpenAI  
-- Anthropic  
-- DeepSeek  
-- OpenRouter  
+<table width="100%" cellspacing="0" cellpadding="0" style="border: none; border-collapse: collapse;">
+<tr style="border: none;">
+<td width="50%" valign="top" style="border: none; padding-right: 20px;">
 
-Your tools. Your rules.
+**Automatically detect and fix errors directly from logs.**
+
+- Parses your logs for **file names** and **line numbers**  
+- Opens affected files and **auto-fixes** issues with LLMs  
+- Takes an automatic backup (`.bak`) of the file  
+- If anything goes wrong, **auto-restores the original** version  
+
+> Powered by your preferred model: OpenAI, Claude, Gemini, DeepSeek, or OpenRouter — via your own API key (BYOK)
+
+**Example Query:**  
+`"Undefined variable $undefined_variable (File: /code/wp-content/themes/twentytwentyfive/functions.php Line: 164)"`
+
+</td>
+<td width="50%" valign="top" align="center" style="border: none;">
+  <img src="./assets/Editor _ Mermaid Chart-2025-06-25-083009.png" alt="AI Fix Flow" width="30%">
+</td>
+</tr>
+</table>
 
 ---
 
-## 📤 One-Click xls Export
+## 🔐 BYOK (Bring Your Own Key) Support
 
-Export everything with a click — clean `.xls` format.
+WP Site Inspector gives you full control over AI usage. In the plugin settings, you can add your own API key and choose from supported providers and models.
 
-Great for:
+**Supported Providers & Models:**
 
-- 🧪 QA teams  
-- 🧾 Client reports  
-- 🔧 Dev handoffs  
-- 📁 Project docs
+| Provider     | Models |
+|--------------|--------|
+| `wp-site-inspector` | `WPSI-01` |
+| `openai`     | `gpt-4`, `gpt-3.5-turbo` |
+| `deepseek`   | `deepseek-chat`, `deepseek-coder`, `deepseek-chat-v3` |
+| `anthropic`  | `Claude 3 Opus`, `Claude 3 Sonnet`, `Claude 3 Haiku` |
+| `google`     | `Gemini 1.5 Pro`, `Gemini 1.0 Pro` |
+| `mistral`    | `Mistral Small`, `Mistral Medium`, `Mistral Large` |
+| `openrouter` | `GPT-3.5 Turbo`, `GPT-4`, `DeepSeek Chat v3 (Free)` |
 
 ---
 
-## 🌍 Multilingual Ready
+### 🆓 Don’t have a key? Use Our Free Model!
 
-Currently supports:
+You can also use our own hosted model: **WPSI-01**, available under the `wp-site-inspector` provider.
+
+> ✅ We offer limited free access per day.  
+> 📧 Just send a request via email to get your personal API key.  
+> 🔐 Secure, no vendor lock-in, and completely private.
+
+---
+
+
+## 🌍 Multilingual Support
 
 - 🇬🇧 English  
-- 🇫🇷 French  
+- 🇩🇪 German  
 - 🇪🇸 Spanish  
 
-UI adapts to your site’s language automatically — no setup needed.
+UI auto-detects and adapts to your site's language.
 
 ---
 
-## 🔄 One-Click Backup
+## 📤 One-Click Export
 
-Back up your entire site — files + DB — in one click.  
-Creates a downloadable `.zip`. No extra plugins needed.
+Export your full scan to `.xls` — perfect for:
+
+- 🧪 QA reports  
+- 🧾 Client documentation  
+- 🔧 Dev handoffs  
 
 ---
 
 ## 📦 Coming Soon
-
-- ⚡ AI-powered log auto-fix  
-- 🔍 Plugin folder scanner  
-- 📁 File/function filters  
+ 
 - 🧪 WP-CLI integration  
-- 🧠 AI-based fix suggestions  
-- 🗃️ Visual theme dependency map
+
 
 ---
 
-## ⚙️ How to Install
+## ⚙️ Installation
 
-1. Download the `.zip` from GitHub  
-2. Go to `Plugins > Add New > Upload Plugin`  
-3. Upload and click **Install Now**, then **Activate**  
-4. Start inspecting via the WP Admin menu
+1. [Download latest ZIP](https://github.com/prathushan/WP-Site-Inspector/archive/refs/heads/main.zip)  
+2. Go to **Plugins → Add New → Upload Plugin**  
+3. Install and activate  
+4. Start inspecting from the WP Admin menu  
 
 ---
 
-## 🧠 Why We Built This
+## 💡 Why We Built This
 
-We created WP Site Inspector because:
+Because:
 
 - WordPress sites grow messy — fast  
-- Devs spend hours asking “What’s active and why?”  
+- Developers waste hours asking “What’s active and why?”  
 - Legacy code makes debugging painful  
 
-This plugin saves time, simplifies audits, and ensures smoother handoffs.  
-No fluff. No guesswork. Just answers.
-
----
-
-## 📃 License
-
-Distributed under the MIT License.
+> This plugin saves time, simplifies audits, and improves team handoffs.
 
 ---
 
 ## 📬 Contact
 
-We’d love your feedback or contributions!
-
-📧 Email: `prathusha.nammi@gmail.com`  
-🐛 GitHub: [Open an issue](https://github.com/prathushan/WP-Site-Inspector/issues)
+- 📧 Email: [prathusha.nammi@gmail.com](mailto:prathusha.nammi@gmail.com)  
+- 🐛 Bug reports: [GitHub Issues](https://github.com/prathushan/WP-Site-Inspector/issues)  
+- 💡 Feature requests: [GitHub Discussions](https://github.com/prathushan/WP-Site-Inspector/discussions)  
 
 ---
 
 ## 🙌 Authors
 
-**Made with ❤️ by [Prathusha](https://github.com/prathushan), [Prem](https://github.com/PremKumar-Softscripts), and [Vinay](https://github.com/v-i-nay)**
- 
+Made with ❤️ by:
 
-**Contributions welcome** 👉 [Open a PR or feature request](https://github.com/prathushan/WP-Site-Inspector/issues)
+- [**Prathusha**](https://github.com/prathushan)  
+- [**Prem Kumar**](https://github.com/PremKumar-Softscripts)  
+- [**Vinay**](https://github.com/v-i-nay)  
+
+Want to contribute? 👉 [Open a Pull Request](https://github.com/prathushan/WP-Site-Inspector/pulls)
 
 ---
+
+
+## 📄 License
+
+Distributed under the [MIT License](https://choosealicense.com/licenses/mit/).  
+Free to use, modify, and distribute with attribution.
+
+---
+
+<p align="center">
+  <strong>Audit. Analyze. Fix. Repeat.</strong><br>
+  <em>Built for WordPress developers who demand clarity and control.</em>
+</p>
+
+
