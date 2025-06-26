@@ -72,27 +72,19 @@ Perfect for:
 
 ## 🤖 AI Code Assistant
 
-<table width="100%" cellspacing="0" cellpadding="0" style="border:none; border-collapse:collapse;">
-<tr style="border:none;">
-<td style="width:50%; vertical-align:top; border:none;">
+<img src="./assets/Ask ai.png" alt="Ask AI Screenshot" align="right" width="350">
 
 > AI chatbot that finds, explains, and fixes errors.
 
-✔️Ask: “Why did this error happen?”  
-✔️Suggest fixes for deprecated or fatal code  
-✔️Get file-level insights on PHP warnings or notices  
-✔️Understand complex or undocumented functions  
-✔️Get explanations for deprecation notices and warnings  
-✔️Identify which plugin/theme generated the error  
-✔️Copy fix suggestions directly into your theme/plugin  
-✔️Use your own API key (BYOK) for secure, private debugging  
+✔️ Ask: “Why did this error happen?”  
+✔️ Suggest fixes for deprecated or fatal code  
+✔️ Get file-level insights on PHP warnings or notices  
+✔️ Understand complex or undocumented functions  
+✔️ Get explanations for deprecation notices and warnings  
+✔️ Identify which plugin/theme generated the error  
+✔️ Copy fix suggestions directly into your theme/plugin  
+✔️ Use your own API key (BYOK) for secure, private debugging  
 
-</td>
-<td style="width:50%; text-align:center; vertical-align:top; border:none;">
-  <img src="./assets/Ask ai.png" alt="Ask AI Screenshot" width="480">
-</td>
-</tr>
-</table>
 
 ---
 
