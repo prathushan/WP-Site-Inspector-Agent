@@ -132,7 +132,7 @@ Perfect for:
 
 </td>
 <td style="width:50%; text-align:center; vertical-align:top; border:none;">
-  <img src="./assets/Editor _ Mermaid Chart-2025-06-25-083009.png" alt="AI Fix Flow" width="480">
+  <img src="./assets/WP_Site_Inspector _Agen_Workflow.png" alt="AI Fix Flow" width="480">
 </td>
 </tr>
 </table>
