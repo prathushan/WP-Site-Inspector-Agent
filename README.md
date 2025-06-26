@@ -236,6 +236,9 @@ Made with ❤️ by:
 
 Want to contribute? 👉 [Open a Pull Request](https://github.com/prathushan/WP-Site-Inspector/pulls)
 
+⭐️ If you find this project helpful, please consider [starring the repo](https://github.com/prathushan/WP-Site-Inspector) — it helps others discover it too!
+
+
 ---
 
 
