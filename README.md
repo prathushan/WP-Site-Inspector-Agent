@@ -87,7 +87,7 @@ Perfect for:
 <tr style="border:none;">
 <td style="width:50%; vertical-align:top; border:none;">
 
-> Like ChatGPT for your error logs — inside WordPress.
+> Like AI for your error logs — inside WordPress.
 
 ✔️Ask: “Why did this error happen?”  
 ✔️Suggest fixes for deprecated or fatal code  
