@@ -107,13 +107,11 @@ Perfect for:
 
 ---
 
-
-
 ### ⚡ AI-powered log auto-fix 
 
-<table width="100%" cellspacing="0" cellpadding="0" style="border: none; border-collapse: collapse;">
-<tr style="border: none;">
-<td width="50%" valign="top" style="border: none; padding-right: 20px;">
+<table width="100%" cellspacing="0" cellpadding="0" style="border:none; border-collapse:collapse;">
+<tr style="border:none;">
+<td style="width:50%; vertical-align:top; border:none; padding-right:20px;">
 
 **Automatically detect and fix errors directly from logs.**
 
@@ -128,13 +126,14 @@ Perfect for:
 `"Undefined variable $undefined_variable (File: /code/wp-content/themes/twentytwentyfive/functions.php Line: 164)"`
 
 </td>
-<td width="50%" valign="top" align="center" style="border: none;">
-  <img src="./assets/Editor _ Mermaid Chart-2025-06-25-083009.png" alt="AI Fix Flow" width="30%">
+<td style="width:50%; text-align:center; vertical-align:top; border:none;">
+  <img src="./assets/Editor _ Mermaid Chart-2025-06-25-083009.png" alt="AI Fix Flow" width="480">
 </td>
 </tr>
 </table>
 
 ---
+
 
 ## 🔐 BYOK (Bring Your Own Key) Support
 
