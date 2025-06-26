@@ -88,11 +88,9 @@ Perfect for:
 
 ---
 
-### ⚡ AI-powered log auto-fix 
+### ⚡ AI-powered log auto-fix
 
-<table width="100%" cellspacing="0" cellpadding="0" style="border:none; border-collapse:collapse;">
-<tr style="border:none;">
-<td style="width:50%; vertical-align:top; border:none; padding-right:20px;">
+<img src="./assets/WP_Site_Inspector _Agen_Workflow.png" alt="AI Fix Flow" align="right" width="350" style="margin-left:20px;">
 
 **Automatically detect and fix errors directly from logs.**
 
@@ -111,12 +109,6 @@ Perfect for:
 **Example Query:**  
 `"Undefined variable $undefined_variable (File: /code/wp-content/themes/twentytwentyfive/functions.php Line: 164)"`
 
-</td>
-<td style="width:50%; text-align:center; vertical-align:top; border:none;">
-  <img src="./assets/WP_Site_Inspector _Agen_Workflow.png" alt="AI Fix Flow" width="480">
-</td>
-</tr>
-</table>
 
 ---
 
