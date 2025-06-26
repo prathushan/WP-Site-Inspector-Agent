@@ -112,13 +112,13 @@ Perfect for:
 
 ---
 
-
-
 ## 🔐 BYOK (Bring Your Own Key) Support
 
 WP Site Inspector Agent gives you full control over AI usage. In the plugin settings, you can add your own API key and choose from supported providers and models.
 
 **Supported Providers & Models:**
+
+<div align="center">
 
 | Provider     | Models |
 |--------------|--------|
@@ -129,6 +129,8 @@ WP Site Inspector Agent gives you full control over AI usage. In the plugin sett
 | `google`     | `Gemini 1.5 Pro`, `Gemini 1.0 Pro` |
 | `mistral`    | `Mistral Small`, `Mistral Medium`, `Mistral Large` |
 | `openrouter` | `GPT-3.5 Turbo`, `GPT-4`, `DeepSeek Chat v3 (Free)` |
+
+</div>
 
 ---
 
