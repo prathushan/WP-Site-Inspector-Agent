@@ -90,7 +90,7 @@ Perfect for:
 
 ### ⚡ AI-powered log auto-fix
 
-<img src="./assets/WP_Site_Inspector _Agen_Workflow.png" alt="AI Fix Flow" align="right" width="350" style="margin-left:20px;">
+<img src="./assets/WP_Site_Inspector _Agen_Workflow.png" alt="AI Fix Flow" align="right" width="250" style="margin-left:20px;">
 
 **Automatically detect and fix errors directly from logs.**
 
