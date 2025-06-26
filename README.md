@@ -17,7 +17,7 @@
 
 ## 📖 Overview
 
-**WP Site Inspector** is an open-source WordPress plugin built for developers, freelancers, and agencies who need **instant, actionable insights** into any WordPress site.
+**WP Site Inspector Agent** is an open-source WordPress plugin built for developers, freelancers, and agencies who need **instant, actionable insights** into any WordPress site.
 
 It’s like an x-ray machine for your WordPress stack — exposing everything from shortcodes and hooks to REST APIs, templates, and hidden issues.
 
@@ -64,7 +64,7 @@ If you've ever said:
 - “Where is this shortcode defined?”  
 - “Which plugin is breaking the homepage?”  
 
-Then **WP Site Inspector** is made for you.
+Then **WP Site Inspector Agent** is made for you.
 
 Perfect for:  
 🧑‍💻 Freelancers • 🧪 QA Engineers • 🏢 Agencies • 💡 WP Contributors • 👩‍🎓 Students
@@ -143,7 +143,7 @@ Perfect for:
 
 ## 🔐 BYOK (Bring Your Own Key) Support
 
-WP Site Inspector gives you full control over AI usage. In the plugin settings, you can add your own API key and choose from supported providers and models.
+WP Site Inspector Agent gives you full control over AI usage. In the plugin settings, you can add your own API key and choose from supported providers and models.
 
 **Supported Providers & Models:**
 
