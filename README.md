@@ -87,7 +87,7 @@ Perfect for:
 <tr style="border:none;">
 <td style="width:50%; vertical-align:top; border:none;">
 
-> Your AI chatbot inside WordPress — it finds, explains, and fixes error log issues for you.
+> AI chatbot that finds, explains, and fixes errors.
 
 ✔️Ask: “Why did this error happen?”  
 ✔️Suggest fixes for deprecated or fatal code  
