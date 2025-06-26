@@ -89,14 +89,14 @@ Perfect for:
 
 > Like ChatGPT for your error logs — inside WordPress.
 
-🌟Ask: “Why did this error happen?”  
-🌟Suggest fixes for deprecated or fatal code  
-🌟Get file-level insights on PHP warnings or notices  
-🌟Understand complex or undocumented functions  
-🌟Get explanations for deprecation notices and warnings  
-🌟Identify which plugin/theme generated the error  
-🌟Copy fix suggestions directly into your theme/plugin  
-🌟Use your own API key (BYOK) for secure, private debugging  
+✔️Ask: “Why did this error happen?”  
+✔️Suggest fixes for deprecated or fatal code  
+✔️Get file-level insights on PHP warnings or notices  
+✔️Understand complex or undocumented functions  
+✔️Get explanations for deprecation notices and warnings  
+✔️Identify which plugin/theme generated the error  
+✔️Copy fix suggestions directly into your theme/plugin  
+✔️Use your own API key (BYOK) for secure, private debugging  
 
 </td>
 <td style="width:50%; text-align:center; vertical-align:top; border:none;">
