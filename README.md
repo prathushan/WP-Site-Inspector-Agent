@@ -28,9 +28,9 @@ It’s like an x-ray machine for your WordPress stack — exposing everything fr
 
 ## ✨ Features
 
-<table width="100%" cellspacing="0" cellpadding="0" style="border: none; border-collapse: collapse;">
-<tr style="border: none;">
-<td width="50%" style="vertical-align: top; border: none; padding-right: 20px;">
+<table width="100%" cellspacing="0" cellpadding="0" style="border:none; border-collapse:collapse;">
+<tr style="border:none;">
+<td style="width:50%; vertical-align:top; border:none;">
 
 - ✅ Scan active/parent themes without setup  
 - ✅ Instantly list shortcodes, hooks, templates, post types  
@@ -45,13 +45,14 @@ It’s like an x-ray machine for your WordPress stack — exposing everything fr
 - ✅ Multilingual UI: 🇬🇧 English, 🇩🇪 German, 🇪🇸 Spanish  
 
 </td>
-<td width="50%" style="text-align: center; vertical-align: top; border: none;">
-  <img src="./assets/Wp-site-inspector-ui.png" alt="WP Site Inspector UI" width="300">
+<td style="width:50%; text-align:center; vertical-align:top; border:none;">
+  <img src="./assets/Wp-site-inspector-ui.png" alt="WP Site Inspector UI" width="480">
 </td>
 </tr>
 </table>
 
 ---
+
 
 
 
