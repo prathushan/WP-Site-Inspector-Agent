@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <a href="https://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT"></a>
+  <a href="https://github.com/prathushan/WP-Site-Inspector?tab=MIT-2-ov-file#"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT"></a>
   <a href="https://github.com/prathushan/WP-Site-Inspector/releases"><img src="https://img.shields.io/badge/version-v1.0.0-blue?style=flat-square" alt="Manual Version Badge"></a>
   <a href="https://github.com/prathushan/WP-Site-Inspector/stargazers"><img src="https://img.shields.io/github/stars/prathushan/WP-Site-Inspector?color=orange" alt="GitHub Stars"></a>
   <a href="https://github.com/prathushan/WP-Site-Inspector/issues"><img src="https://img.shields.io/github/issues/prathushan/WP-Site-Inspector?color=red" alt="GitHub Issues"></a>
