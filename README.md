@@ -182,7 +182,7 @@ UI auto-detects and adapts to your site's language.
 
 ## 📤 One-Click Export
 
-Export your full scan to `.xls` — perfect for:
+Export your full scan to `.xlsx` — perfect for:
 
 - 🧪 QA reports  
 - 🧾 Client documentation  
