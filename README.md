@@ -1,4 +1,4 @@
-<h1 align="center">🛠️ WP Site Inspector</h1>
+<h1 align="center">🛠️ WP Site Inspector Agent</h1>
 
 <p align="center">
   <strong>Your WordPress Debug & Discovery Co-Pilot</strong><br>
