@@ -46,7 +46,7 @@ It’s like an x-ray machine for your WordPress stack — exposing everything fr
 
 </td>
 <td style="text-align:center; vertical-align:top; padding-left:20px; border: none;">
-  <img src="./assets/Wp-site-inspector-ui.png" alt="WP Site Inspector UI" width="500">
+  <img src="./assets/Wp-site-inspector-ui.png" alt="WP Site Inspector UI" width="200">
 </td>
 </tr>
 </table>
