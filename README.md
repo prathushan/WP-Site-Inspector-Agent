@@ -83,7 +83,7 @@ Perfect for:
 ✔️ Get explanations for deprecation notices and warnings  
 ✔️ Identify which plugin/theme generated the error  
 ✔️ Copy fix suggestions directly into your theme/plugin  
-✔️ Use your own API key (BYOK) for secure, private debugging  
+✔️ Use your own API key (BYOK) for private debugging  
 
 
 ---
