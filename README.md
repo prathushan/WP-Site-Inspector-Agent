@@ -119,6 +119,12 @@ Perfect for:
 - Opens affected files and **auto-fixes** issues with LLMs  
 - Takes an automatic backup (`.bak`) of the file  
 - If anything goes wrong, **auto-restores the original** version  
+- Compatible with all major WordPress themes and plugins  
+- Handles common errors like undefined variables, missing includes, deprecated functions  
+- Displays status updates: Pending, Fulfilled, Failed  
+- Works with custom-coded themes and plugins  
+- Integrated with the WP Site Inspector dashboard for one-click recovery  
+- Designed for both novice and advanced developers  
 
 > Powered by your preferred model: OpenAI, Claude, Gemini, DeepSeek, or OpenRouter — via your own API key (BYOK)
 
@@ -133,6 +139,7 @@ Perfect for:
 </table>
 
 ---
+
 
 
 ## 🔐 BYOK (Bring Your Own Key) Support
