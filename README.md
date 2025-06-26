@@ -28,7 +28,7 @@ It’s like an x-ray machine for your WordPress stack — exposing everything fr
 
 ## ✨ Features
 
-<img src="./assets/Wp-site-inspector-ui.png" alt="WP Site Inspector UI" align="right" width="300">
+<img src="./assets/Wp-site-inspector-ui.png" alt="WP Site Inspector UI" align="right" width="400">
 
 - ✅ Scan active/parent themes without setup  
 - ✅ Instantly list shortcodes, hooks, templates, post types  
