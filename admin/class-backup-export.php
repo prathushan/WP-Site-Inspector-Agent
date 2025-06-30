@@ -1,18 +1,21 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-class WPSI_Backup_Export {
+class WPSI_Backup_Export
+{
 
-    public static function init() {
+    public static function init()
+    {
         add_action('admin_post_wpsi_export_backup', [__CLASS__, 'handle_backup']);
     }
 
-    public static function handle_backup() {
+    public static function handle_backup()
+    {
         // Verify permissions and nonce
         if (!current_user_can('manage_options')) {
             wp_die(__('You do not have sufficient permissions to access this page.'));
         }
-        
+
         check_admin_referer('wpsi_backup_export');
 
         // Setup environment for large backups
@@ -36,7 +39,7 @@ class WPSI_Backup_Export {
         $timestamp = current_time('Ymd-His');
         $zip_file = $backup_dir . 'full-backup-' . $timestamp . '.zip';
         $temp_dir = $backup_dir . 'temp-' . $timestamp . '/';
-        
+
         // Create temporary directory for database dump
         if (!wp_mkdir_p($temp_dir)) {
             wp_die(__('Could not create temporary directory.'));
@@ -109,7 +112,7 @@ class WPSI_Backup_Export {
         // Stream the file
         $chunk_size = 1024 * 1024; // 1MB chunks
         $handle = fopen($zip_file, 'rb');
-        
+
         if ($handle === false) {
             wp_die(__('Could not open backup file for reading.'));
         }
@@ -120,15 +123,16 @@ class WPSI_Backup_Export {
         }
 
         fclose($handle);
-        
+
         // Clean up
         unlink($zip_file);
         exit;
     }
 
-    private static function export_database($file_path) {
+    private static function export_database($file_path)
+    {
         global $wpdb;
-        
+
         $handle = fopen($file_path, 'w');
         if (!$handle) return false;
 
@@ -137,7 +141,7 @@ class WPSI_Backup_Export {
         fwrite($handle, "SET FOREIGN_KEY_CHECKS = 0;\n\n");
 
         $tables = $wpdb->get_col("SHOW TABLES");
-        
+
         foreach ($tables as $table) {
             // Skip tables not from this WordPress installation
             if (strpos($table, $wpdb->prefix) !== 0) continue;
@@ -150,25 +154,25 @@ class WPSI_Backup_Export {
             // Get table data in chunks
             $offset = 0;
             $chunk_size = 500;
-            
+
             while (true) {
                 $rows = $wpdb->get_results("SELECT * FROM `$table` LIMIT $offset, $chunk_size", ARRAY_A);
                 if (empty($rows)) break;
-                
+
                 $offset += $chunk_size;
-                
+
                 $columns = array_keys($rows[0]);
                 fwrite($handle, "INSERT INTO `$table` (`" . implode('`,`', $columns) . "`) VALUES\n");
-                
+
                 $inserts = array();
                 foreach ($rows as $row) {
-                    $values = array_map(function($v) use ($wpdb) {
+                    $values = array_map(function ($v) use ($wpdb) {
                         if (is_null($v)) return "NULL";
                         return "'" . $wpdb->_real_escape($v) . "'";
                     }, array_values($row));
                     $inserts[] = '(' . implode(',', $values) . ')';
                 }
-                
+
                 fwrite($handle, implode(",\n", $inserts) . ";\n\n");
             }
         }
@@ -178,9 +182,10 @@ class WPSI_Backup_Export {
         return true;
     }
 
-    private static function cleanup_temp($dir) {
+    private static function cleanup_temp($dir)
+    {
         if (!file_exists($dir)) return;
-        
+
         $files = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
             RecursiveIteratorIterator::CHILD_FIRST

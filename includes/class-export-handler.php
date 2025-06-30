@@ -1,23 +1,26 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-class WP_Site_Inspector_Export_Handler {
-    
-    public function __construct() {
+class WP_Site_Inspector_Export_Handler
+{
+
+    public function __construct()
+    {
         add_action('wp_ajax_wpsi_export_excel', [$this, 'handle_export_excel']);
     }
-    
-    public function handle_export_excel() {
+
+    public function handle_export_excel()
+    {
         // Verify nonce and permissions
         check_ajax_referer('wpsi_ajax_nonce', 'nonce');
-        
+
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['error' => 'Unauthorized access']);
         }
-        
+
         // Initialize analyzer
         $analyzer = new WP_Site_Inspector_Analyzer();
-        
+
         // Get data for all tabs
         $export_data = [
             'plugins' => $this->format_data($analyzer->analyze_tab('plugins')),
@@ -30,15 +33,16 @@ class WP_Site_Inspector_Export_Handler {
             'hooks' => $this->format_data($analyzer->analyze_tab('hooks')),
             'cdn' => $this->format_data($analyzer->analyze_tab('cdn'))
         ];
-        
+
         wp_send_json_success($export_data);
     }
-    
-    private function format_data($data) {
+
+    private function format_data($data)
+    {
         if (empty($data) || !is_array($data)) {
             return [];
         }
-        
+
         $formatted = [];
         foreach ($data as $row) {
             if (is_array($row)) {
@@ -56,10 +60,10 @@ class WP_Site_Inspector_Export_Handler {
                 $formatted[] = ['value' => $row];
             }
         }
-        
+
         return $formatted;
     }
 }
 
 // Initialize the export handler
-new WP_Site_Inspector_Export_Handler(); 
+new WP_Site_Inspector_Export_Handler();

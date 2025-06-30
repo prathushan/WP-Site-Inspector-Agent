@@ -5,7 +5,8 @@ if (!defined('ABSPATH')) exit;
 /**
  * Custom error handler for logging to site-inspector.log
  */
-function wpsi_custom_error_handler($errno, $errstr, $errfile, $errline) {
+function wpsi_custom_error_handler($errno, $errstr, $errfile, $errline)
+{
     $types = match ($errno) {
         E_ERROR             => __('ERROR', 'wp-site-inspector'),
         E_WARNING           => __('WARNING', 'wp-site-inspector'),
@@ -42,7 +43,8 @@ set_error_handler('wpsi_custom_error_handler');
 /**
  * Handle fatal errors on shutdown
  */
-function wpsi_shutdown_handler() {
+function wpsi_shutdown_handler()
+{
     $error = error_get_last();
     if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
         $timestamp = date("Y-m-d H:i:s");

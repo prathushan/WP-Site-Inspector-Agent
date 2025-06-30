@@ -3,66 +3,67 @@ if (!defined('ABSPATH')) exit;
 
 class WP_Site_Inspector_Analyzer
 {
-
-
-    public function analyze_tab($tab) {
+    public function analyze_tab($tab)
+    {
         switch ($tab) {
             case 'theme':
                 return $this->analyze_theme();
-            
+
             case 'builders':
                 return $this->analyze_builders();
-            
+
             case 'plugins':
                 return $this->analyze_plugins();
-            
+
             case 'pages':
                 return $this->analyze_pages();
-            
+
             case 'posts':
                 return $this->analyze_posts();
-            
+
             case 'post-types':
                 return $this->analyze_post_types();
-            
+
             case 'templates':
                 return $this->analyze_templates();
-            
+
             case 'shortcodes':
                 return $this->analyze_shortcodes();
-            
+
             case 'hooks':
                 return $this->analyze_hooks();
-            
+
             case 'apis':
                 return $this->analyze_apis();
-            
+
             case 'cdn':
                 return $this->analyze_cdn();
-            
+
             case 'logs':
                 return $this->analyze_logs();
-            
+
             default:
                 return false;
         }
     }
 
-    private function analyze_theme() {
+    private function analyze_theme()
+    {
         $theme = wp_get_theme();
         $name = $theme->get('Name');
         $version = $theme->get('Version');
-        $type=file_exists(get_theme_root() . '/' . $theme->get_stylesheet() . '/theme.json') 
-                    ? __('Block (FSE)', 'wp-site-inspector') 
-                    : __('Classic', 'wp-site-inspector');
-        
+        $type = file_exists(get_theme_root() . '/' . $theme->get_stylesheet() . '/theme.json')
+            ? __('Block (FSE)', 'wp-site-inspector')
+            : __('Classic', 'wp-site-inspector');
+
         return [
             ['Active Theme', esc_html($name) . ' v' . esc_html($version)],
             ['Theme Type', esc_html($type)]
-          ];
+        ];
     }
 
-    private function analyze_builders() {
+    private function analyze_builders()
+    {
         $all_plugins = get_plugins();
         $builders = [];
         $builder_list = [
@@ -78,7 +79,7 @@ class WP_Site_Inspector_Analyzer
             'themify-builder/themify-builder.php' => 'Themify Builder',
             'seedprod/seedprod.php' => 'SeedProd'
         ];
-        
+
         foreach ($builder_list as $slug => $label) {
             if (isset($all_plugins[$slug])) {
                 $builders[] = [
@@ -87,79 +88,81 @@ class WP_Site_Inspector_Analyzer
                 ];
             }
         }
-        
+
         return $builders;
     }
 
-    private function analyze_plugins() {
+    private function analyze_plugins()
+    {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
         $all_plugins = get_plugins();
         $update_plugins = get_site_transient('update_plugins');
         $plugins = [];
-        
+
         foreach ($all_plugins as $slug => $info) {
             $has_update = isset($update_plugins->response[$slug]);
             $plugin_path = WP_PLUGIN_DIR . '/' . $slug;
             $install_time = file_exists($plugin_path) ? date('Y-m-d H:i:s', filectime($plugin_path)) : __('N/A', 'wp-site-inspector');
             $update_time = file_exists($plugin_path) ? date('Y-m-d H:i:s', filemtime($plugin_path)) : __('N/A', 'wp-site-inspector');
-            
+
             // Use consistent status values
             $status = is_plugin_active($slug) ? 'active' : 'inactive';
-            
+
             $plugins[] = [
                 'name' => $info['Name'],
                 'status' => $status,
-//                 'status_label' => $status === 'active' ? __('Active', 'wp-site-inspector') : __('Inactive', 'wp-site-inspector'),
                 'update' => $has_update ? __('Update available', 'wp-site-inspector') : __('Up to date', 'wp-site-inspector'),
                 'installed_on' => $install_time,
                 'last_update' => $update_time,
             ];
         }
-        
+
         return $plugins;
     }
 
-    private function analyze_pages() {
+    private function analyze_pages()
+    {
         $pages = [];
         foreach (get_pages(['post_status' => ['publish', 'draft']]) as $page) {
-            $formatted_date = $page->post_status === 'publish' 
-                ? date('m/d/y, h:ia', strtotime($page->post_date)) 
+            $formatted_date = $page->post_status === 'publish'
+                ? date('m/d/y, h:ia', strtotime($page->post_date))
                 : __('Not Published', 'wp-site-inspector');
-            
+
             // Use consistent status values
             $status = strtolower($page->post_status);
-            
+
             $pages[] = [
                 'title' => $page->post_title,
                 'status' => $status,
-//                 'status_label' => ucfirst(__($page->post_status, 'wp-site-inspector')),
                 'date' => $formatted_date
             ];
         }
         return $pages;
     }
 
-    private function analyze_posts() {
+    private function analyze_posts()
+    {
         $posts = [];
         foreach (get_posts(['numberposts' => -1, 'post_status' => ['publish', 'draft', 'pending']]) as $post) {
             $posts[] = [
                 'title' => $post->post_title,
                 'status' => ucfirst(__($post->post_status, 'wp-site-inspector')),
-                'date' => ($post->post_status === 'publish') 
-                    ? date('d/m/y, h:iA', strtotime($post->post_date)) 
+                'date' => ($post->post_status === 'publish')
+                    ? date('d/m/y, h:iA', strtotime($post->post_date))
                     : __('Not Published', 'wp-site-inspector')
             ];
         }
         return $posts;
     }
 
-    public function analyze_post_types() {
+    public function analyze_post_types()
+    {
         try {
             $post_types = [];
             foreach (get_post_types([], 'objects') as $post_type => $obj) {
                 // Safely get the file source
                 $file = $obj->_builtin ? 'Built in' : (!empty($obj->description) && stripos($obj->description, 'plugin') !== false ? 'Plugin (guessed)' : 'functions.php or plugin');
-                
+
                 // Safely get post count
                 $count = wp_count_posts($post_type);
                 $published = isset($count->publish) ? intval($count->publish) : 0;
@@ -173,13 +176,13 @@ class WP_Site_Inspector_Analyzer
                     'posts_per_page' => 1,
                     'fields'         => 'ids'
                 ]);
-                
+
                 // Format the last used date
                 $last_used = !empty($last) ? get_the_date('Y-m-d H:i:s', $last[0]) : '—';
-                
+
                 // Safely get the label
-                $label = isset($obj->label) && !empty($obj->label) 
-                    ? $obj->label 
+                $label = isset($obj->label) && !empty($obj->label)
+                    ? $obj->label
                     : (isset($obj->labels->name) ? $obj->labels->name : ucfirst($post_type));
 
                 // Add to results array using numeric index
@@ -191,16 +194,16 @@ class WP_Site_Inspector_Analyzer
                     'last_used'  => $last_used
                 ];
             }
-            
+
             return $post_types;
-            
         } catch (Exception $e) {
             error_log('WP Site Inspector - Post Types Analysis Error: ' . $e->getMessage());
             return []; // Return empty array on error
         }
     }
 
-    private function analyze_templates() {
+    private function analyze_templates()
+    {
         $templates = [];
         $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(ABSPATH));
         foreach ($rii as $file) {
@@ -224,22 +227,23 @@ class WP_Site_Inspector_Analyzer
         return $templates;
     }
 
-    public function analyze_shortcodes() {
+    public function analyze_shortcodes()
+    {
         try {
             global $wpdb;
             $shortcodes = [];
-        
+
             // Find all shortcodes in theme/plugin files
             $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(ABSPATH));
             foreach ($rii as $file) {
                 if ($file->isDir()) continue;
                 $ext = pathinfo($file, PATHINFO_EXTENSION);
                 if (!in_array($ext, ['php', 'js'])) continue;
-        
+
                 $path = $file->getPathname();
                 $relative = str_replace(ABSPATH, '', $path);
                 $lines = file($path);
-        
+
                 foreach ($lines as $i => $line) {
                     if (preg_match_all('/add_shortcode\s*\(\s*[\'"]([^\'"]+)[\'"]/', $line, $matches)) {
                         foreach ($matches[1] as $tag) {
@@ -255,14 +259,14 @@ class WP_Site_Inspector_Analyzer
                     }
                 }
             }
-        
+
             // Search posts/pages for shortcode usage
             $contents = $wpdb->get_results("
                 SELECT post_title, post_content 
                 FROM {$wpdb->posts} 
                 WHERE post_status IN ('publish', 'draft')
             ", ARRAY_A);
-        
+
             foreach ($contents as $entry) {
                 foreach ($shortcodes as $tag => &$info) {
                     if (strpos($entry['post_content'], $tag) !== false) {
@@ -270,21 +274,21 @@ class WP_Site_Inspector_Analyzer
                     }
                 }
             }
-        
+
             // Convert used_in arrays to comma-separated strings
             foreach ($shortcodes as &$info) {
                 $info['used_in'] = empty($info['used_in']) ? 'Not used' : implode(', ', array_unique($info['used_in']));
             }
-        
+
             // Convert to indexed array for consistent output
             return array_values($shortcodes);
-            
         } catch (Exception $e) {
             error_log('WP Site Inspector - Shortcodes Analysis Error: ' . $e->getMessage());
             return []; // Return empty array on error
         }
     }
-    public function analyze_hooks() {
+    public function analyze_hooks()
+    {
         try {
             global $wp_filter;
             $hooks_data = [];
@@ -299,7 +303,7 @@ class WP_Site_Inspector_Analyzer
                                 // Get the file path for this callback if possible
                                 $reflection = null;
                                 $file_path = '';
-                                
+
                                 try {
                                     if (is_array($cb['function'])) {
                                         if (is_object($cb['function'][0])) {
@@ -310,7 +314,7 @@ class WP_Site_Inspector_Analyzer
                                     } elseif (is_string($cb['function'])) {
                                         $reflection = new ReflectionFunction($cb['function']);
                                     }
-                                    
+
                                     if ($reflection) {
                                         $file_path = str_replace(ABSPATH, '', $reflection->getFileName());
                                     }
@@ -334,14 +338,14 @@ class WP_Site_Inspector_Analyzer
             }
 
             return $hooks_data;
-            
         } catch (Exception $e) {
             error_log('WP Site Inspector - Hooks Analysis Error: ' . $e->getMessage());
             return [];
         }
     }
 
-    private function get_callback_name($callback) {
+    private function get_callback_name($callback)
+    {
         if (is_string($callback)) {
             return $callback;
         } elseif (is_array($callback)) {
@@ -360,44 +364,45 @@ class WP_Site_Inspector_Analyzer
         return false;
     }
 
-    private function analyze_apis() {
+    private function analyze_apis()
+    {
         $rest_apis = [];
-        
+
         try {
             $iterator = new RecursiveIteratorIterator(
                 new RecursiveDirectoryIterator(ABSPATH),
                 RecursiveIteratorIterator::LEAVES_ONLY
             );
-            
+
             $excluded_dirs = ['vendor', 'node_modules', '.git']; // Add any directories to exclude
-            
+
             foreach ($iterator as $file) {
                 // Skip directories and non-PHP/JS files
                 if ($file->isDir() || !in_array($file->getExtension(), ['php', 'js'])) {
                     continue;
                 }
-                
+
                 // Skip excluded directories
                 foreach ($excluded_dirs as $dir) {
                     if (strpos($file->getPathname(), $dir) !== false) {
                         continue 2;
                     }
                 }
-                
+
                 $path = $file->getPathname();
                 $relative_path = str_replace(ABSPATH, '', $path);
-                
+
                 // Read file line by line to save memory
                 $handle = fopen($path, 'r');
                 $line_number = 0;
-                
+
                 while (($line = fgets($handle)) !== false) {
                     $line_number++;
-                    
+
                     if (strpos($line, 'register_rest_route') === false) {
                         continue;
                     }
-                    
+
                     // More robust pattern matching
                     if (preg_match(
                         '/register_rest_route\s*\(\s*([\'"])([^\1]+?)\1\s*,\s*([\'"])([^\3]+?)\3/',
@@ -407,7 +412,7 @@ class WP_Site_Inspector_Analyzer
                         $namespace = $matches[2];
                         $route = $matches[4];
                         $endpoint = $namespace . $route;
-                        
+
                         if (!isset($rest_apis[$endpoint])) {
                             $rest_apis[$endpoint] = [
                                 'endpoint' => $endpoint,
@@ -420,13 +425,12 @@ class WP_Site_Inspector_Analyzer
                         }
                     }
                 }
-                
+
                 fclose($handle);
             }
-            
+
             // Convert to indexed array for consistent output
             return array_values($rest_apis);
-            
         } catch (Exception $e) {
             error_log('API analysis error: ' . $e->getMessage());
             return [
@@ -442,12 +446,13 @@ class WP_Site_Inspector_Analyzer
         }
     }
 
-    private function analyze_cdn() {
+    private function analyze_cdn()
+    {
         try {
             $cdn_links = [];
             $theme = wp_get_theme();
             $theme_path = '/themes/' . $theme->get_stylesheet() . '/';
-            
+
             // Common CDN libraries and their patterns
             $cdn_patterns = [
                 'swiper' => ['swiper', 'cdn.swiper.js'],
@@ -499,7 +504,7 @@ class WP_Site_Inspector_Analyzer
                             // Extract URL if possible
                             // preg_match('/(https?:\/\/[^\s\'"]+(?:' . preg_quote($pattern, '/') . ')[^\s\'"]+)/', $contents, $matches);
                             // $url = !empty($matches[1]) ? $matches[1] : '';
-                            
+
                             $cdn_links[] = [
                                 $lib,
                                 $relative_path
@@ -512,34 +517,27 @@ class WP_Site_Inspector_Analyzer
 
             // Return default message if no CDN links found
             if (empty($cdn_links)) {
-               return [['No CDN libraries', 'No external libraries detected']];
+                return [['No CDN libraries', 'No external libraries detected']];
             }
 
             // Remove duplicates
             $cdn_links = array_map("unserialize", array_unique(array_map("serialize", $cdn_links)));
-            
+
             return $cdn_links;
-            
         } catch (Exception $e) {
             error_log('WP Site Inspector - CDN Analysis Error: ' . $e->getMessage());
             return [['Error', 'Failed to analyze CDN usage: ' . esc_html($e->getMessage()), '']];
         }
     }
 
-    public function analyze_logs() {
+    public function analyze_logs()
+    {
         try {
             $log_file = WP_CONTENT_DIR . '/site-inspector.log';
             $max_entries = 100;
             $log_rows = [];
             $seen_messages = [];
-            $log_cleared = false;
             $limit_reached = false;
-
-            // Clear logs manually if requested
-            if (isset($_POST['wpsi_clear_logs']) && check_admin_referer('wpsi_clear_logs_action')) {
-                file_put_contents($log_file, '');
-                $log_cleared = true;
-            }
 
             if (file_exists($log_file)) {
                 $log_lines = file($log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -591,10 +589,6 @@ class WP_Site_Inspector_Analyzer
                         }
                     }
                 }
-
-                // Rewrite trimmed unique logs to file
-                $preserved_lines = array_reverse($filtered_lines);
-                file_put_contents($log_file, implode(PHP_EOL, $preserved_lines) . PHP_EOL);
             }
 
             // Fallback if no errors found
@@ -609,31 +603,19 @@ class WP_Site_Inspector_Analyzer
 
             // Add notices
             $notices = '';
-            if ($log_cleared) {
-                $notices .= '<div class="notice notice-success"><p>' . esc_html__('Logs cleared successfully.', 'wp-site-inspector') . '</p></div>';
-            } elseif ($limit_reached) {
+            if ($limit_reached) {
                 $notices .= '<div class="notice notice-warning"><p>' . esc_html__('Displaying the most recent 100 unique log entries.', 'wp-site-inspector') . '</p></div>';
             }
 
-            // Add clear logs button
-            ob_start();
-            ?>
-            <div style="display: inline-block; margin-left: 20px;">
-                <form method="post" style="display: inline;">
-                    <?php wp_nonce_field('wpsi_clear_logs_action'); ?>
-                    <input type="submit" name="wpsi_clear_logs" class="button button-secondary" value="<?php echo esc_attr__('Clear Logs', 'wp-site-inspector'); ?>" />
-                </form>
-            </div>
-            <?php
-            $clear_button = ob_get_clean();
+            $clear_button = '';
+            $custom_title = 'Error Logs';
 
             return [
                 'rows' => $log_rows,
                 'notices' => $notices,
                 'clear_button' => $clear_button,
-                'custom_title' => 'Error Logs' . $clear_button
+                'custom_title' => $custom_title
             ];
-            
         } catch (Exception $e) {
             error_log('WP Site Inspector - Logs Analysis Error: ' . $e->getMessage());
             return [];
@@ -643,10 +625,11 @@ class WP_Site_Inspector_Analyzer
     /**
      * Helper function to log errors in a structured format
      */
-    public function log_error($type, $message, $file = '', $line = '') {
+    public function log_error($type, $message, $file = '', $line = '')
+    {
         $log_file = WP_CONTENT_DIR . '/site-inspector.log';
         $timestamp = current_time('Y-m-d H:i:s');
-        
+
         $log_entry = sprintf(
             '[%s] %s - %s%s',
             strtoupper($type),
@@ -654,9 +637,9 @@ class WP_Site_Inspector_Analyzer
             $message,
             ($file || $line) ? sprintf(' (File: %s, Line: %s)', $file, $line) : ''
         );
-        
+
         error_log($log_entry . PHP_EOL, 3, $log_file);
-        
+
         // The email notification will be handled by WP_Site_Inspector_Email_Handler
         // which checks the error threshold and sends emails accordingly
     }

@@ -17,5 +17,3 @@ $log_file = WP_CONTENT_DIR . '/site-inspector.log';
 if (file_exists($log_file)) {
     @unlink($log_file);
 }
-
-
