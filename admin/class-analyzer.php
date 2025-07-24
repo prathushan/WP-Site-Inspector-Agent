@@ -418,9 +418,6 @@ class WP_Site_Inspector_Analyzer
                                 'endpoint' => $endpoint,
                                 'namespace' => $namespace,
                                 'route' => $route,
-                                // 'file' => $relative_path,
-                                // 'line' => $line_number,
-                                // 'used_in' => []
                             ];
                         }
                     }
@@ -501,10 +498,6 @@ class WP_Site_Inspector_Analyzer
                 foreach ($cdn_patterns as $lib => $patterns) {
                     foreach ($patterns as $pattern) {
                         if (stripos($contents, $pattern) !== false) {
-                            // Extract URL if possible
-                            // preg_match('/(https?:\/\/[^\s\'"]+(?:' . preg_quote($pattern, '/') . ')[^\s\'"]+)/', $contents, $matches);
-                            // $url = !empty($matches[1]) ? $matches[1] : '';
-
                             $cdn_links[] = [
                                 $lib,
                                 $relative_path
