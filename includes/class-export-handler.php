@@ -23,15 +23,18 @@ class WP_Site_Inspector_Export_Handler
 
         // Get data for all tabs
         $export_data = [
-            'plugins' => $this->format_data($analyzer->analyze_tab('plugins')),
-            'pages' => $this->format_data($analyzer->analyze_tab('pages')),
-            'posts' => $this->format_data($analyzer->analyze_tab('posts')),
-            'post-types' => $this->format_data($analyzer->analyze_tab('post-types')),
-            'templates' => $this->format_data($analyzer->analyze_tab('templates')),
-            'shortcodes' => $this->format_data($analyzer->analyze_tab('shortcodes')),
-            'apis' => $this->format_data($analyzer->analyze_tab('apis')),
-            'hooks' => $this->format_data($analyzer->analyze_tab('hooks')),
-            'cdn' => $this->format_data($analyzer->analyze_tab('cdn'))
+    'theme'     => $this->format_data($analyzer->analyze_tab('theme')),
+    'builders'  => $this->format_data($analyzer->analyze_tab('builders')),
+    'plugins'   => $this->format_data($analyzer->analyze_tab('plugins')),
+    'pages'     => $this->format_data($analyzer->analyze_tab('pages')),
+    'posts'     => $this->format_data($analyzer->analyze_tab('posts')),
+    'post-types'=> $this->format_data($analyzer->analyze_tab('post-types')),
+    'templates' => $this->format_data($analyzer->analyze_tab('templates')),
+    'shortcodes'=> $this->format_data($analyzer->analyze_tab('shortcodes')),
+    'apis'      => $this->format_data($analyzer->analyze_tab('apis')),
+    'hooks'     => $this->format_data($analyzer->analyze_tab('hooks')),
+    'cdn'       => $this->format_data($analyzer->analyze_tab('cdn')),
+    'logs'      => $this->format_data($analyzer->analyze_tab('logs'))
         ];
 
         wp_send_json_success($export_data);
