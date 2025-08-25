@@ -37,6 +37,7 @@ class WP_Site_Inspector_Export_Handler
     'logs'      => $this->format_data($analyzer->analyze_tab('logs'))
         ];
 
+
         wp_send_json_success($export_data);
     }
 

@@ -134,22 +134,40 @@ class WP_Site_Inspector_Settings
             ['label_for' => 'wpsi_ai_model']
         );
     }
-    public function alert_emails_field_html()
-    {
-        $emails = get_option('wpsi_alert_emails', '');
-        echo '<input type="text" id="wpsi_alert_emails" name="wpsi_alert_emails" value="' . esc_attr($emails) . '" class="regular-text" autocomplete="off">';
-        echo '<p class="description">' . esc_html__('Enter multiple emails separated by commas (e.g. owner@example.com, dev@example.com)', 'wp-site-inspector') . '</p>';
-    }
+ public function alert_emails_field_html()
+{
+    $emails = get_option('wpsi_alert_emails', '');
+    ?>
+    <div class="wpsi-premium-wrapper">
+        <div class="wpsi-premium-overlay">
+           <a href="https://www.wpsia.com/"><span class="wpsi-premium-badge">Upgrade to Premium</span></a>
+        </div>
+        <input type="text" id="wpsi_alert_emails" name="wpsi_alert_emails"
+               value="<?php echo esc_attr($emails); ?>"
+               class="regular-text" autocomplete="off" disabled>
+        <p class="description"><?php echo esc_html__('Enter multiple emails separated by commas (e.g. owner@example.com, dev@example.com)', 'wp-site-inspector'); ?></p>
+    </div>
+    <?php
+}
 
-    public function enable_log_email_field_html()
-    {
-        $enabled = get_option('wpsi_enable_log_email', false);
-        echo "<label style='display:inline-flex;align-items:center;gap:8px;'>
-        <input type='checkbox' name='wpsi_enable_log_email' value='1'" . checked($enabled, true, false) . '> ' .
-            esc_html__('Enable log email notifications', 'wp-site-inspector') . '
-    </label>';
-        echo '<p class="description">' . esc_html__('If enabled, error log email notifications will be sent when the threshold is reached.', 'wp-site-inspector') . '</p>';
-    }
+public function enable_log_email_field_html()
+{
+    $enabled = get_option('wpsi_enable_log_email', false);
+    ?>
+    <div class="wpsi-premium-wrapper">
+        <div class="wpsi-premium-overlay">
+           <a href="https://www.wpsia.com/"><span class="wpsi-premium-badge">Upgrade to Premium</span></a>
+        </div>
+        <label style="display:inline-flex;align-items:center;gap:8px;">
+            <input type="checkbox" name="wpsi_enable_log_email" value="1"
+                   <?php checked($enabled, true, false); ?> disabled>
+            <?php echo esc_html__('Enable log email notifications', 'wp-site-inspector'); ?>
+        </label>
+        <p class="description"><?php echo esc_html__('If enabled, error log email notifications will be sent when the threshold is reached.', 'wp-site-inspector'); ?></p>
+    </div>
+    <?php
+}
+
 
     public function error_threshold_field_html()
     {
@@ -346,6 +364,61 @@ class WP_Site_Inspector_Settings
                 });
             });
         </script>
+
+        <style>
+            .wpsi-premium-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 600px;
+    opacity: 0.6;
+    pointer-events: none; /* Prevent interaction */
+}
+
+.wpsi-premium-overlay {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 6px;
+    pointer-events: none;
+}
+
+.wpsi-premium-badge {
+    position: absolute;
+    top: 15px;
+    left:35%;
+    background: #6D7AE2;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 8px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    pointer-events: auto;
+    cursor: pointer;
+    animation: pulse 1.5s infinite;
+}
+.pro-premium-tag {
+    background: #6D7AE2;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    animation: pulse 1.5s infinite;
+}
+
+/* Pulse keyframes */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+ </style>
 <?php
     }
 
@@ -358,3 +431,4 @@ class WP_Site_Inspector_Settings
         // No need for separate JS file since we're using inline JS
     }
 }
+

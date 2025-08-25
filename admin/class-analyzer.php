@@ -418,6 +418,9 @@ class WP_Site_Inspector_Analyzer
                                 'endpoint' => $endpoint,
                                 'namespace' => $namespace,
                                 'route' => $route,
+                                // 'file' => $relative_path,
+                                // 'line' => $line_number,
+                                // 'used_in' => []
                             ];
                         }
                     }
@@ -498,6 +501,10 @@ class WP_Site_Inspector_Analyzer
                 foreach ($cdn_patterns as $lib => $patterns) {
                     foreach ($patterns as $pattern) {
                         if (stripos($contents, $pattern) !== false) {
+                            // Extract URL if possible
+                            // preg_match('/(https?:\/\/[^\s\'"]+(?:' . preg_quote($pattern, '/') . ')[^\s\'"]+)/', $contents, $matches);
+                            // $url = !empty($matches[1]) ? $matches[1] : '';
+
                             $cdn_links[] = [
                                 $lib,
                                 $relative_path
@@ -567,7 +574,7 @@ class WP_Site_Inspector_Analyzer
                         $seen_messages[$dedup_key] = true;
                         $filtered_lines[] = $line;
 
-                        $ai_button = '<button class="button ask-ai-button" data-message="' . esc_attr($full_message) . '">' . esc_html__('Ask AI', 'wp-site-inspector') . '</button>';
+                        $ai_button = '<button class="ask-ai-button" data-message="' . esc_attr($full_message) . '">' . esc_html__('Ask AI', 'wp-site-inspector') . '</button>';
 
                         $log_rows[] = [
                             esc_html($timestamp ? date('m/d/y, h:ia', strtotime($timestamp)) : 'N/A'),

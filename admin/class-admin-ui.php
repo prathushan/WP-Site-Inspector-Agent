@@ -12,40 +12,62 @@ class WP_Site_Inspector_Admin_UI
     }
 
 
-    public function register_menu()
-    {
-        add_menu_page(
-            __('WP Site Inspector', 'wp-site-inspector'),
-            __('Site Inspector', 'wp-site-inspector'),
-            'manage_options',
-            'wp-site-inspector',
-            [$this, 'render_dashboard'],
-            'dashicons-chart-area',
-            81
-        );
-        add_submenu_page(
-            'wp-site-inspector',
-            'Code AI Assistant',
-            'Code AI',
-            'manage_options',
-            'wpsi-code-ai',
-            [$this, 'render_code_ai_page']
-        );
-        add_submenu_page(
-            'wp-site-inspector',
-            'Site Backup',
-            'Backup',
-            'manage_options',
-            'wpsi-backup',
-            [$this, 'render_backup_page']
-        );
-    }
+   public function register_menu()
+{
+    add_menu_page(
+        __('WP Site Inspector', 'wp-site-inspector'),
+        __('Site Inspector', 'wp-site-inspector'),
+        'manage_options',
+        'wp-site-inspector',
+        [$this, 'render_dashboard'],
+        'dashicons-chart-area',
+        81
+    );
+
+    add_submenu_page(
+        'wp-site-inspector',
+        'Site Backup',
+        'Backup <span class="pro-premium-tag" style="margin-left:4px;font-size:8px;">PREMIUM</span>',
+        'manage_options',
+        'wpsi-backup',
+        [$this, 'render_backup_page']
+    );
+
+    add_submenu_page(
+        'wp-site-inspector',
+        __('Accessibility Checker', 'wp-site-inspector'),
+        'Accessibility <span class="pro-premium-tag" style="margin-left:4px;font-size:8px;">PREMIUM</span>',
+        'manage_options',
+        'wpsi-accessibility',
+        [$this, 'render_accessibility_page']
+    );
+}
+
 
     /**
      * Enqueue assets only for the plugin page
      */
     public function enqueue_assets($hook)
     {
+         if (strpos($hook, 'wpsi-accessibility') !== false) {
+        // Enqueue your Accessibility styles/scripts
+        wp_enqueue_script(
+            'axe-core',
+            'https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.3/axe.min.js',
+            [],
+            '4.7.2',
+            true
+        );
+
+        wp_enqueue_script(
+            'wpsi-accessibility-script',
+            plugin_dir_url(__FILE__) . 'assets/script.js',
+            ['jquery', 'axe-core'],
+            '1.0.0',
+            true
+        );
+    }
+
         if ($hook !== 'toplevel_page_wp-site-inspector') return;
 
         // Enqueue styles
@@ -92,13 +114,12 @@ class WP_Site_Inspector_Admin_UI
         include_once plugin_dir_path(__FILE__) . 'views/dashboard.php';
     }
 
-    public function render_code_ai_page()
-    {
-        include_once plugin_dir_path(__FILE__) . 'views/code-ai.php';
-    }
-
     public function render_backup_page()
     {
         include plugin_dir_path(__FILE__) . 'views/backup.php';
     }
+    public function render_accessibility_page()
+{
+    include plugin_dir_path(__FILE__) . 'views/accessibility.php';
+}
 }

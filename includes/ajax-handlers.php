@@ -251,7 +251,7 @@ class WP_Site_Inspector_Ajax_Handler
         $headers = $this->get_headers_for_tab($tab);
 
         echo "<div id='$tab' class='tab-content'>";
-        echo "<h2>" . ($custom_title ? wp_kses_post($custom_title) : esc_html($this->get_tab_title($tab))) . "</h2>";
+//         echo "<h2>" . ($custom_title ? wp_kses_post($custom_title) : esc_html($this->get_tab_title($tab))) . "</h2>";
         echo "<div class='wpsi-table-wrap'>";
 
         // Table start
@@ -313,7 +313,7 @@ class WP_Site_Inspector_Ajax_Handler
         echo "<div class='wpsi-pagination' data-tab='$tab' data-total-pages='$total_pages'>";
 
         // Previous button
-        echo "<button class='pagination-btn prev-page' " . (1 <= 1 ? 'disabled' : '') . ">" . esc_html__('Previous', 'wp-site-inspector') . "</button>";
+        echo "<button class='pagination-btn prev-page' " . (1 <= 1 ? 'disabled' : '') . '><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2 394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6 150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z"/></svg></button>';
 
         // First page
         echo "<button class='pagination-btn page-number active' data-page='1'>1</button>";
@@ -344,7 +344,7 @@ class WP_Site_Inspector_Ajax_Handler
         }
 
         // Next button
-        echo "<button class='pagination-btn next-page' " . ($total_pages <= 1 ? 'disabled' : '') . ">" . esc_html__('Next', 'wp-site-inspector') . "</button>";
+        echo "<button class='pagination-btn next-page' " . ($total_pages <= 1 ? 'disabled' : '') . '><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M439.1 297.4C451.6 309.9 451.6 330.2 439.1 342.7L279.1 502.7C266.6 515.2 246.3 515.2 233.8 502.7C221.3 490.2 221.3 469.9 233.8 457.4L371.2 320L233.9 182.6C221.4 170.1 221.4 149.8 233.9 137.3C246.4 124.8 266.7 124.8 279.2 137.3L439.2 297.3z"/></svg></button>';
         echo "</div>";
     }
 

@@ -24,10 +24,9 @@ require_once plugin_dir_path(__FILE__) . 'admin/class-analyzer.php';
 require_once plugin_dir_path(__FILE__) . 'includes/logger.php';
 require_once plugin_dir_path(__FILE__) . 'includes/ajax-handlers.php';
 require_once plugin_dir_path(__FILE__) . 'admin/class-settings.php';
-require_once plugin_dir_path(__FILE__) . 'admin/class-backup-export.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-export-handler.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-email-handler.php';
-require_once plugin_dir_path(__FILE__) . 'admin/class-fix-agent.php';
+
+
 
 // Add default settings
 add_action('admin_init', function () {
@@ -62,8 +61,6 @@ add_action('init', 'wp_site_inspector_textDomain');
 // Instantiate Admin UI
 new WP_Site_Inspector_Admin_UI();
 new WP_Site_Inspector_Settings();
-new WP_Site_Inspector_Email_Handler();
-new WP_Site_Inspector_Fix_Agent();
 
 // Register AJAX handlers
 add_action('wp_ajax_wpsi_load_tab_content', 'wpsi_load_tab_content_callback');
@@ -113,7 +110,6 @@ function wpsi_handle_ai_chat()
     }
 
     // Here you would integrate with your AI service
-    // For now, we'll just echo back a simple response
     $response = sprintf(
         esc_html__('I received your message: %s', 'wp-site-inspector'),
         esc_html($message)

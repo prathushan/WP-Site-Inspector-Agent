@@ -46,7 +46,12 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
 
     <!-- Charts Section - Always visible -->
     <div class="wpsi-dashboard-grid">
-        <div class="wpsi-chart-card">
+		        <div class="wpsi-chart-card wpsi-chart-combined">
+            <h3><?php _e('Total Overview', 'wp-site-inspector'); ?></h3>
+            <canvas id="combinedBarChart"></canvas>
+        </div> 
+       <div class="make-graph-col">
+		    <div class="wpsi-chart-card">
             <h3><?php _e('Plugins Overview', 'wp-site-inspector'); ?></h3>
             <canvas id="pluginPieChart"></canvas>
         </div>
@@ -54,10 +59,8 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
             <h3><?php _e('Pages Overview', 'wp-site-inspector'); ?></h3>
             <canvas id="pagePieChart"></canvas>
         </div>
-        <div class="wpsi-chart-card">
-            <h3><?php _e('Total Overview', 'wp-site-inspector'); ?></h3>
-            <canvas id="combinedBarChart"></canvas>
-        </div>
+		</div>
+
     </div>
 
     <!-- Tabs Container -->
@@ -89,36 +92,43 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
     height:600px; background:#fff; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.2);
     z-index:10000;flex-direction:column; font-family:sans-serif;">
 
-    <div style="background:#000; color:#fff; padding:12px 16px; font-weight:bold; position:relative;">
+    <div style="background:#6D7AE2; color:#fff; padding:12px 16px; font-weight:bold; position:relative;">
         AI Code Assistant
         <button id="wpsi-chat-close" style="position:absolute; right:10px; top:8px; background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">×</button>
     </div>
 
     <div id="wpsi-chat-messages" style="flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; background:#f7f7f7;">
-        <!-- Messages will be added here -->
     </div>
 
-    <!--     <div style="padding:10px; border-top:1px solid #ddd; display:flex;">
-        <input type="text" id="wpsi-user-input" placeholder="Ask something..." style="flex:1; padding:8px 10px; border-radius:6px; border:1px solid #ccc; font-size:14px;">
-        <button id="wpsi-send-btn" style="margin-left:8px; padding:8px 12px; background:#4b6cb7; color:#fff; border:none; border-radius:6px; cursor:pointer;">Send</button>
-    </div> -->
-    <div style="padding:10px; border-top:1px solid #ddd; display:flex;background-color:#252525;">
-        <button id="solve-ai-btn" style="margin-left:8px; padding:8px 12px; background:#4b6cb7; color:#fff; border:none; border-radius:6px; cursor:pointer;">Fix with Ai <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" height="12px" style="margin-left:3px" ; viewBox="0 0 576 512">
-                <path d="M234.7 42.7L197 56.8c-3 1.1-5 4-5 7.2s2 6.1 5 7.2l37.7 14.1L248.8 123c1.1 3 4 5 7.2 5s6.1-2 7.2-5l14.1-37.7L315 71.2c3-1.1 5-4 5-7.2s-2-6.1-5-7.2L277.3 42.7 263.2 5c-1.1-3-4-5-7.2-5s-6.1 2-7.2 5L234.7 42.7zM46.1 395.4c-18.7 18.7-18.7 49.1 0 67.9l34.6 34.6c18.7 18.7 49.1 18.7 67.9 0L529.9 116.5c18.7-18.7 18.7-49.1 0-67.9L495.3 14.1c-18.7-18.7-49.1-18.7-67.9 0L46.1 395.4zM484.6 82.6l-105 105-23.3-23.3 105-105 23.3 23.3zM7.5 117.2C3 118.9 0 123.2 0 128s3 9.1 7.5 10.8L64 160l21.2 56.5c1.7 4.5 6 7.5 10.8 7.5s9.1-3 10.8-7.5L128 160l56.5-21.2c4.5-1.7 7.5-6 7.5-10.8s-3-9.1-7.5-10.8L128 96 106.8 39.5C105.1 35 100.8 32 96 32s-9.1 3-10.8 7.5L64 96 7.5 117.2zm352 256c-4.5 1.7-7.5 6-7.5 10.8s3 9.1 7.5 10.8L416 416l21.2 56.5c1.7 4.5 6 7.5 10.8 7.5s9.1-3 10.8-7.5L480 416l56.5-21.2c4.5-1.7 7.5-6 7.5-10.8s-3-9.1-7.5-10.8L480 352l-21.2-56.5c-1.7-4.5-6-7.5-10.8-7.5s-9.1 3-10.8 7.5L416 352l-56.5 21.2z" />
-            </svg></button>
-    </div>
+<div class="pro-btn-container">
+    <a href="https://www.wpsia.com/" class="pro-btn-fix-ai" target="_blank">
+        Fix with AI 
+        <svg class="pro-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+            <path d="M234.7 42.7L197 56.8c-3 1.1-5 4-5 7.2s2 6.1 5 7.2l37.7 14.1L248.8 123c1.1 3 4 5 7.2 5s6.1-2 7.2-5l14.1-37.7L315 71.2c3-1.1 5-4 5-7.2s-2-6.1-5-7.2L277.3 42.7 263.2 5c-1.1-3-4-5-7.2-5s-6.1 2-7.2 5L234.7 42.7zM46.1 395.4c-18.7 18.7-18.7 49.1 0 67.9l34.6 34.6c18.7 18.7 49.1 18.7 67.9 0L529.9 116.5c18.7-18.7 18.7-49.1 0-67.9L495.3 14.1c-18.7-18.7-49.1-18.7-67.9 0L46.1 395.4zM484.6 82.6l-105 105-23.3-23.3 105-105 23.3 23.3zM7.5 117.2C3 118.9 0 123.2 0 128s3 9.1 7.5 10.8L64 160l21.2 56.5c1.7 4.5 6 7.5 10.8 7.5s9.1-3 10.8-7.5L128 160l56.5-21.2c4.5-1.7 7.5-6 7.5-10.8s-3-9.1-7.5-10.8L128 96 106.8 39.5C105.1 35 100.8 32 96 32s-9.1 3-10.8 7.5L64 96 7.5 117.2zm352 256c-4.5 1.7-7.5 6-7.5 10.8s3 9.1 7.5 10.8L416 416l21.2 56.5c1.7 4.5 6 7.5 10.8 7.5s9.1-3 10.8-7.5L480 416l56.5-21.2c4.5-1.7 7.5-6 7.5-10.8s-3-9.1-7.5-10.8L480 352l-21.2-56.5c-1.7-4.5-6-7.5-10.8-7.5s-9.1 3-10.8 7.5L416 352l-56.5 21.2z"/>
+        </svg>
+        <span class="pro-premium-tag">PREMIUM</span>
+    </a>
+</div>
+
+
 </div>
 
 <style>
     .wpsi-loading {
         text-align: center;
         padding: 20px;
+		display:none !important;
     }
 
     .wpsi-loading .spinner {
         float: none;
         margin: 0 auto;
     }
+	.make-graph-col{
+display:flex;
+		flex-direction:column;
+		gap:10px;
+}
 
     .wpsi-dashboard-grid {
         /* position: sticky;
@@ -128,6 +138,16 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
         padding: 20px 0;
         margin: -20px 0 20px 0;
     }
+	.wpsi-dashboard-grid{
+max-height:450px !important;
+	}
+	
+	.wpsi-chart-combined{
+		display:flex;
+		flex-direction:column;
+		justify-content:space-around;
+max-height:100% !important;
+}
 
     .wpsi-chart-card {
         background: white;
@@ -145,6 +165,9 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
         width: 100% !important;
         height: 300px !important;
     }
+	#combinedBarChart{
+max-height:300px !important;
+}
 
     .wpsi-pagination {
         margin-top: 20px;
@@ -400,7 +423,8 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
                                 $logsTab.find('#wpsi-clear-logs-btn').parent().remove();
 
                                 // Prepend the button only inside the logs tab
-                                $logsTab.prepend('<div style="margin-bottom:10px;"><button id="wpsi-clear-logs-btn" class="button button-secondary">Clear Logs</button></div>');
+                               
+// 								$logsTab.prepend('<div style="margin-bottom:10px;"><button id="wpsi-clear-logs-btn" class="button button-secondary">Clear Logs</button></div>');
                             }
                         } else {
                             console.error('Invalid response format:', response);
@@ -438,7 +462,7 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
                     ],
                     datasets: [{
                         data: [<?php echo $active_plugins; ?>, <?php echo $inactive_plugins; ?>],
-                        backgroundColor: ['#2ecc71', '#e74c3c']
+                        backgroundColor: [ '#1d4ed8','#b2dede']
                     }]
                 },
                 options: {
@@ -463,7 +487,7 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
                     ],
                     datasets: [{
                         data: [<?php echo $published_pages; ?>, <?php echo $draft_pages; ?>],
-                        backgroundColor: ['#3498db', '#95a5a6']
+                        backgroundColor: ['#1d4ed8','#b2dede']
                     }]
                 },
                 options: {
@@ -479,6 +503,9 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
 
             // Combined Bar Chart
             const overviewCtx = document.getElementById('combinedBarChart').getContext('2d');
+			const gradient = overviewCtx.createLinearGradient(0, 0, 0, 400);
+gradient.addColorStop(0, '#1d4ed8');  // Top color
+gradient.addColorStop(1, '#b2dede');  // Bottom color
             charts.overview = new Chart(overviewCtx, {
                 type: 'bar',
                 data: {
@@ -502,7 +529,8 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
                             <?php echo count($shortcodes_data); ?>,
                             <?php echo count($apis_data); ?>
                         ],
-                        backgroundColor: '#0073aa'
+                        backgroundColor: gradient,
+						barThickness: 60
                     }]
                 },
                 options: {
@@ -514,13 +542,21 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
                         }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            }
-                        }
-                    }
+    y: {
+        beginAtZero: true,
+        ticks: {
+            precision: 0
+        },
+        grid: {
+            display: false // 🚫 Hide horizontal grid lines
+        }
+    },
+    x: {
+        grid: {
+            display: false // 🚫 Hide vertical grid lines
+        }
+    }
+}
                 }
             });
         }
@@ -667,8 +703,8 @@ wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.7.
         // Add export button to the page
         $('.wrap').append(`
         <div class="export-buttons">
-            <button id="wpsi-export-excel" class="button button-primary" style="padding:8px 12px; border-radius:5px;">
-                Export to Excel <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" height="12px" viewBox="0 0 576 512"><path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 128-168 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l168 0 0 112c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zM384 336l0-48 110.1 0-39-39c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l80 80c9.4 9.4 9.4 24.6 0 33.9l-80 80c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l39-39L384 336zm0-208l-128 0L256 0 384 128z"/></svg>
+            <button id="wpsi-export-excel" class="export-button" style="padding:8px 12px; border-radius:5px; padding:12px; background-color:#6d7ae2; color:#fff;">
+                Download Report <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" height="12px" viewBox="0 0 576 512"><path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 128-168 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l168 0 0 112c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zM384 336l0-48 110.1 0-39-39c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l80 80c9.4 9.4 9.4 24.6 0 33.9l-80 80c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l39-39L384 336zm0-208l-128 0L256 0 384 128z"/></svg>
 	</button>
         </div>
     `);
